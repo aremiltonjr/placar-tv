@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar TV Imobiliária - Final V6</title>
+    <title>Placar TV Imobiliária - Final V7</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,25 +18,21 @@
         .active { display: flex; flex-direction: column; }
         @keyframes fadeUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
         
-        /* --- AJUSTES DE LAYOUT PÓDIO --- */
+        /* Pódio */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; height: 100%; gap: 20px; }
-        
-        /* Barras */
         .podium-bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; border-radius: 12px 12px 0 0; width: 180px; position: relative; transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1); height: 0%; }
         
         .place-1 { background: linear-gradient(to top, #ca8a04, #facc15); border: 2px solid #fef08a; box-shadow: 0 0 50px rgba(250, 204, 21, 0.5); }
         .place-2 { background: linear-gradient(to top, #64748b, #94a3b8); border: 2px solid #e2e8f0; }
         .place-3 { background: linear-gradient(to top, #7c2d12, #d97706); border: 2px solid #fdba74; }
         
-        /* Avatares - AGORA BEM MAIS ALTOS */
+        /* Avatares (Mantendo ajuste alto) */
         .avatar { 
             width: 110px; height: 110px; 
             border-radius: 50%; border: 4px solid white; 
-            /* Ajuste Crítico Aqui: */
             margin-bottom: -90px; 
             position: relative; 
             top: -90px; 
-            /* ------------------ */
             z-index: 20; 
             background-color: #333; 
             display: flex; align-items: center; justify-content: center; 
@@ -47,16 +43,9 @@
         }
         .active .avatar { transform: scale(1.1); }
         
-        /* Texto do Pódio - Padding extra no topo para garantir que o texto não cole na borda */
         .podium-info { text-align: center; width: 100%; padding-top: 10px; padding-bottom: 10px; }
-
-        /* Cartões KPI */
         .kpi-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: center; border-left: 4px solid; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        /* Gráficos */
         .chart-container { position: relative; width: 100%; height: 100%; }
-        
-        /* Loading Overlay */
         #loading { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
     </style>
 </head>
@@ -259,8 +248,8 @@
                         if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                         corretores[corretor].vgv += vgv;
 
-                        // Captadores
-                        if (captador && captador !== '-' && captador.length > 2 && captador !== "Lauro Braga") {
+                        // Captadores (Trava Lauro Braga E Alysson Costa)
+                        if (captador && captador !== '-' && captador.length > 2 && captador !== "Lauro Braga" && captador !== "Alysson Costa") {
                             if (!captadores[captador]) captadores[captador] = 0;
                             captadores[captador]++;
                         }
@@ -389,7 +378,7 @@
                     align: 'start', 
                     clamp: true, 
                     formatter: (val) => val.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0}), 
-                    font: {weight:'bold'} 
+                    font: {weight:'bold', size: 16} // <--- TAMANHO 16 APLICADO
                 } 
             },
             scales: { x: { grid: { color: '#334155' } }, y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: {size: 13} } } }
@@ -410,7 +399,7 @@
                 maintainAspectRatio: false, 
                 plugins: {
                     legend: { display: false }, 
-                    datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold' , Size: 16 } }
+                    datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold', size: 16 } } // <--- TAMANHO 16 APLICADO
                 },
                 scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } }, x: { grid: { display: false } } } 
             } 
@@ -431,7 +420,4 @@
         setInterval(carregarDados, 120000);
     </script>
 </body>
-
 </html>
-
-
