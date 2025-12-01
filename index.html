@@ -140,7 +140,7 @@
                     </div>
                     <div class="kpi-card border-l-yellow-500">
                         <p class="text-slate-400 text-xs font-bold uppercase">Meta Trimestre</p>
-                        <p class="text-xl font-bold text-yellow-400 truncate" id="kpi-meta">R$ 15.000.000</p>
+                        <p class="text-xl font-bold text-yellow-400 truncate" id="kpi-meta">R$ 36.000.000</p>
                     </div>
                     <div class="kpi-card border-l-red-500">
                         <p class="text-slate-400 text-xs font-bold uppercase">Saldo Meta</p>
@@ -425,10 +425,11 @@
             currentSlide++;
             if (currentSlide > 3) currentSlide = 1;
             document.getElementById(`slide${currentSlide}`).classList.add('active');
-        }, 15000);
+        }, 30000);
 
         carregarDados();
         setInterval(carregarDados, 120000);
     </script>
 </body>
+
 </html>
