@@ -386,7 +386,7 @@
 
         let chartRankingRestante = new Chart(document.getElementById('chartRankingRestante'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
         let chartCaptacoes = new Chart(document.getElementById('chartCaptacoes'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#10b981', borderRadius: 4 }] }, options: { ...commonOptions, plugins: { ...commonOptions.plugins, datalabels: { ...commonOptions.plugins.datalabels, formatter: (v) => v } } } });
-        let chartTrimestre = new Chart(document.getElementById('chartTrimestreRanking'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: (ctx) => ctx.dataIndex===0 ? '#facc15' : '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
+        let chartTrimestre = new Chart(document.getElementById('chartTrimestreRanking'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: (ctx) => ctx.dataIndex===0 ? '#10b981' : '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
         
         let chartMes = new Chart(document.getElementById('chartMesAMes'), { 
             type: 'bar', 
@@ -421,3 +421,4 @@
     </script>
 </body>
 </html>
+
