@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar TV Imobiliária - Final V7</title>
+    <title>Placar TV Imobiliária - Final V16</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
-        /* Estilos Globais */
         body { background-color: #0f172a; color: white; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Animação dos Slides */
         .slide { display: none; height: 100vh; width: 100vw; padding: 20px; box-sizing: border-box; animation: fadeUp 0.8s ease-in-out; }
         .active { display: flex; flex-direction: column; }
         @keyframes fadeUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
         
-        /* Pódio */
         .podium-container { display: flex; align-items: flex-end; justify-content: center; height: 100%; gap: 20px; }
         .podium-bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; border-radius: 12px 12px 0 0; width: 180px; position: relative; transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1); height: 0%; }
         
@@ -26,18 +22,13 @@
         .place-2 { background: linear-gradient(to top, #64748b, #94a3b8); border: 2px solid #e2e8f0; }
         .place-3 { background: linear-gradient(to top, #7c2d12, #d97706); border: 2px solid #fdba74; }
         
-        /* Avatares (Mantendo ajuste alto) */
         .avatar { 
             width: 110px; height: 110px; 
             border-radius: 50%; border: 4px solid white; 
-            margin-bottom: -90px; 
-            position: relative; 
-            top: -90px; 
-            z-index: 20; 
-            background-color: #333; 
+            margin-bottom: -90px; position: relative; top: -90px; 
+            z-index: 20; background-color: #333; 
             display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
+            overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.6); 
             background-size: cover; background-position: center; 
             transition: transform 0.5s; font-size: 3rem; 
         }
@@ -98,12 +89,12 @@
 
         <div class="h-[50%] grid grid-cols-2 gap-6 mt-1 pb-4">
             <div class="bg-slate-800/40 rounded-xl p-3 border border-slate-700 flex flex-col shadow-lg">
-                <h3 class="text-lg font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">📊 Top 4+</h3>
-                <div class="chart-container flex-grow"><canvas id="chartRankingRestante"></canvas></div>
+                <h3 class="text-lg font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">📊 4º ao 9º Lugar</h3>
+                <div class="chart-container flex-grow"><canvas id="chartRankingEsquerda"></canvas></div>
             </div>
             <div class="bg-slate-800/40 rounded-xl p-3 border border-slate-700 flex flex-col shadow-lg">
-                <h3 class="text-lg font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">🏘️ Top Captadores</h3>
-                <div class="chart-container flex-grow"><canvas id="chartCaptacoes"></canvas></div>
+                <h3 class="text-lg font-bold text-slate-300 mb-1 border-b border-slate-700 pb-1">📊 10º ao 15º Lugar</h3>
+                <div class="chart-container flex-grow"><canvas id="chartRankingDireita"></canvas></div>
             </div>
         </div>
     </div>
@@ -240,7 +231,6 @@
                     const equipe = col[16] ? col[16].trim() : 'Geral';
                     const foto = col[17] ? col[17].trim() : '';
 
-                    // FILTRO GERAL
                     if (corretor === "Lauro Braga") continue;
 
                     if (ano === 2025 || ano === 2024) { 
@@ -248,7 +238,7 @@
                         if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                         corretores[corretor].vgv += vgv;
 
-                        // Captadores (Trava Lauro Braga E Alysson Costa)
+                        // Captadores (Trava Lauro e Alysson)
                         if (captador && captador !== '-' && captador.length > 2 && captador !== "Lauro Braga" && captador !== "Alysson Costa") {
                             if (!captadores[captador]) captadores[captador] = 0;
                             captadores[captador]++;
@@ -269,7 +259,7 @@
                     }
                 }
 
-                atualizarInterface(corretores, captadores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal);
+                atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal);
                 document.getElementById('loading').style.opacity = '0';
                 setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
 
@@ -279,11 +269,12 @@
             }
         }
 
-        function atualizarInterface(corretores, captadores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal) {
+        function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal) {
             
             // 1. ANUAL
             const rankingAnual = Object.values(corretores).sort((a,b) => b.vgv - a.vgv);
             
+            // PÓDIO
             const updatePodium = (rank, prefix, heightClass) => {
                 if(rankingAnual[rank]) {
                     document.getElementById(`name-${prefix}`).innerText = rankingAnual[rank].nome;
@@ -300,15 +291,24 @@
             updatePodium(1, 'top2', 'place-2');
             updatePodium(2, 'top3', 'place-3');
 
-            const top4to8 = rankingAnual.slice(3, 8);
-            chartRankingRestante.data.labels = top4to8.map((c, i) => `${i+4}º ${c.nome}`);
-            chartRankingRestante.data.datasets[0].data = top4to8.map(c => c.vgv);
-            chartRankingRestante.update();
+            // --- ESCALA UNIFICADA (CORREÇÃO DE PROPORÇÃO) ---
+            let maxVGV = 0;
+            // Pega o valor do 4º lugar (índice 3) para ser o 100% dos dois gráficos
+            if (rankingAnual[3]) maxVGV = rankingAnual[3].vgv * 1.1; 
 
-            const rankingCaptadores = Object.entries(captadores).map(([n,q]) => ({n,q})).sort((a,b) => b.q - a.q).slice(0, 5);
-            chartCaptacoes.data.labels = rankingCaptadores.map(c => c.n);
-            chartCaptacoes.data.datasets[0].data = rankingCaptadores.map(c => c.q);
-            chartCaptacoes.update();
+            // GRÁFICO ESQUERDA (4º ao 9º)
+            const partEsquerda = rankingAnual.slice(3, 9);
+            chartRankingEsquerda.data.labels = partEsquerda.map((c, i) => `${i+4}º ${c.nome}`);
+            chartRankingEsquerda.data.datasets[0].data = partEsquerda.map(c => c.vgv);
+            if (maxVGV > 0) chartRankingEsquerda.options.scales.x.max = maxVGV; // Aplica escala
+            chartRankingEsquerda.update();
+
+            // GRÁFICO DIREITA (10º ao 15º)
+            const partDireita = rankingAnual.slice(9, 15);
+            chartRankingDireita.data.labels = partDireita.map((c, i) => `${i+10}º ${c.nome}`);
+            chartRankingDireita.data.datasets[0].data = partDireita.map(c => c.vgv);
+            if (maxVGV > 0) chartRankingDireita.options.scales.x.max = maxVGV; // Aplica MESMA escala
+            chartRankingDireita.update();
 
             // 2. TRIMESTRE
             let trimByCorretor = {};
@@ -359,7 +359,13 @@
             document.getElementById(`nome-${prefix}`).innerText = eq.nome;
             document.getElementById(`total-${prefix}`).innerText = formatMoney(eq.vgv);
             
-            const rankEq = Object.entries(eq.corretores).map(([n,v])=>({n,v})).sort((a,b)=>b.v - a.v).slice(0,4);
+            // FILTRO DE GERENTES APENAS NAS BARRAS
+            const gerentes = ["Felipe de Jesus", "Raphael Lisboa"];
+
+            const rankEq = Object.entries(eq.corretores)
+                .filter(([nome, valor]) => !gerentes.includes(nome) && valor > 0) // Remove Gerentes e Zerados
+                .map(([n,v])=>({n,v}))
+                .sort((a,b)=>b.v - a.v); // MOSTRA TODOS AGORA (sem .slice)
             
             chartObj.data.labels = rankEq.map(c => c.n);
             chartObj.data.datasets[0].data = rankEq.map(c => c.v);
@@ -367,25 +373,32 @@
             chartObj.update();
         }
 
+        // Configuração dos Gráficos com Alinhamento à Esquerda (crossAlign: 'far')
         const commonOptions = {
             indexAxis: 'y', maintainAspectRatio: false, responsive: true,
             layout: { padding: { right: 20 } },
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { 
-                    color: 'white', 
-                    anchor: 'end', 
-                    align: 'start', 
-                    clamp: true, 
+                    color: 'white', anchor: 'end', align: 'start', clamp: true, 
                     formatter: (val) => val.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0}), 
-                    font: {weight:'bold', size: 16} // <--- TAMANHO 16 APLICADO
+                    font: {weight:'bold', size: 16}
                 } 
             },
-            scales: { x: { grid: { color: '#334155' } }, y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: {size: 13} } } }
+            // AQUI ESTÁ O AJUSTE DE ALINHAMENTO
+            scales: { 
+                x: { beginAtZero: true, grid: { color: '#334155' } }, 
+                y: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#cbd5e1', font: {size: 13}, crossAlign: 'far' } // <--- ALINHA NOMES À ESQUERDA
+                } 
+            }
         };
 
-        let chartRankingRestante = new Chart(document.getElementById('chartRankingRestante'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
-        let chartCaptacoes = new Chart(document.getElementById('chartCaptacoes'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#10b981', borderRadius: 4 }] }, options: { ...commonOptions, plugins: { ...commonOptions.plugins, datalabels: { ...commonOptions.plugins.datalabels, formatter: (v) => v } } } });
+        // CRIANDO OS GRÁFICOS CORRETOS
+        let chartRankingEsquerda = new Chart(document.getElementById('chartRankingEsquerda'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
+        let chartRankingDireita = new Chart(document.getElementById('chartRankingDireita'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
+
         let chartTrimestre = new Chart(document.getElementById('chartTrimestreRanking'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: (ctx) => ctx.dataIndex===0 ? '#10b981' : '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
         
         let chartMes = new Chart(document.getElementById('chartMesAMes'), { 
@@ -399,7 +412,7 @@
                 maintainAspectRatio: false, 
                 plugins: {
                     legend: { display: false }, 
-                    datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold', size: 16 } } // <--- TAMANHO 16 APLICADO
+                    datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold', size: 16 } }
                 },
                 scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } }, x: { grid: { display: false } } } 
             } 
@@ -421,4 +434,3 @@
     </script>
 </body>
 </html>
-
