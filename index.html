@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar 2026 - V21 (Valor Real)</title>
+    <title>Placar 2026 - Final V22</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -128,7 +128,7 @@
                     </div>
                 </div>
                 <div class="bg-slate-800/40 rounded-xl p-4 border border-slate-700 flex-grow flex flex-col shadow-lg">
-                    <h3 class="text-md font-bold text-slate-300 mb-1">Evolução Mensal</h3>
+                    <h3 class="text-md font-bold text-slate-300 mb-1">Evolução Mensal (VGV)</h3>
                     <div class="chart-container flex-grow"><canvas id="chartMesAMes"></canvas></div>
                 </div>
             </div>
@@ -216,13 +216,12 @@
                     const col = rows[i];
                     if (!col || col.length < 5) continue; 
 
-                    // *** MAPEAMENTO DE COLUNAS ATUALIZADO ***
                     const corretor  = col[0] ? col[0].trim() : "Desconhecido"; 
                     const strData   = col[1] || "";
                     const vgv       = parseMoney(col[2]); 
-                    const valorReal = parseMoney(col[3]); // <--- COLUNA D (Index 3)
-                    const equipe    = col[4] ? col[4].trim() : 'Geral'; // <--- COLUNA E (Index 4)
-                    const foto      = col[5] ? col[5].trim() : ''; // <--- COLUNA F (Index 5)
+                    const valorReal = parseMoney(col[3]); 
+                    const equipe    = col[4] ? col[4].trim() : 'Geral'; 
+                    const foto      = col[5] ? col[5].trim() : ''; 
 
                     const dataParts = strData.split('/'); 
                     if(dataParts.length !== 3) continue; 
@@ -240,7 +239,7 @@
                             vendasTrimestre.push({ corretor, vgv });
                             vendasMesAMes[mes] += vgv;
                             totalTrimVGV += vgv;
-                            totalTrimValorReal += valorReal; // SOMA VALOR REAL
+                            totalTrimValorReal += valorReal;
 
                             if (!equipes[equipe]) equipes[equipe] = { nome: equipe, vgv: 0, corretores: {} };
                             equipes[equipe].vgv += vgv;
@@ -262,7 +261,6 @@
 
         function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal) {
             
-            // 1. ANUAL
             const rankingAnual = Object.values(corretores).sort((a,b) => b.vgv - a.vgv);
             
             const updatePodium = (rank, prefix, heightClass) => {
@@ -296,7 +294,6 @@
             if (maxVGV > 0) chartRankingDireita.options.scales.x.max = maxVGV; 
             chartRankingDireita.update();
 
-            // 2. TRIMESTRE
             let trimByCorretor = {};
             vendasTrimestre.forEach(v => {
                 if(!trimByCorretor[v.corretor]) trimByCorretor[v.corretor] = 0;
@@ -304,8 +301,6 @@
             });
 
             document.getElementById('kpi-vgv').innerText = formatMoney(totalTrimVGV);
-            
-            // MOSTRANDO VALOR REAL
             document.getElementById('kpi-real').innerText = formatMoney(totalTrimValorReal);
             
             const saldo = totalTrimVGV - META_TRIMESTRAL;
@@ -322,7 +317,6 @@
             chartMes.data.datasets[0].data = [vendasMesAMes['1'], vendasMesAMes['2'], vendasMesAMes['3']];
             chartMes.update();
 
-            // 3. EQUIPES
             const eqRaphael = equipes["Time Raphael"] || { nome: "Time Raphael", vgv: 0, corretores: {} };
             const eqFelipe = equipes["Time Felipe"] || { nome: "Time Felipe", vgv: 0, corretores: {} };
             
@@ -395,6 +389,7 @@
             }, 
             options: { 
                 maintainAspectRatio: false, 
+                layout: { padding: { top: 30 } }, // PADDING PARA RÓTULOS TOPO
                 plugins: {
                     legend: { display: false }, 
                     datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold', size: 16 } }
