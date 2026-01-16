@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demonstrativo de Comissão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .editable {
+            background-color: #f0f9ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px dashed #93c5fd;
+            cursor: text;
+            min-width: 50px;
+            display: inline-block;
+            text-align: center;
+        }
+        .editable-wide {
+             min-width: 80px;
+             text-align: left;
+        }
+        .editable:focus {
+            background-color: #e0f2fe;
+            outline: 2px solid #3b82f6;
+        }
+        [contenteditable]:empty::before {
+            content: attr(data-placeholder);
+            color: #a1a1aa;
+            pointer-events: none;
+            display: inline-block;
+        }
+        .calculated {
+            min-width: 80px;
+            display: inline-block;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        /* --- OTIMIZAÇÃO PARA IMPRESSÃO (AJUSTE FINO - 1 PÁGINA) --- */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0.4in 0.5in; /* Margens otimizadas */
+            }
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                font-size: 10pt !important;
+            }
+            .no-print { display: none; }
+            
+            .editable, .calculated {
+                border: none;
+                padding: 0;
+                background-color: transparent !important;
+            }
+            [contenteditable]:empty::before { content: ""; }
+
+            /* Cores forçadas */
+            .bg-blue-50, .bg-indigo-50, .bg-purple-50, .bg-pink-50, .bg-gray-50, .bg-gray-800, .bg-teal-50, .bg-orange-50, .bg-emerald-50, .bg-amber-50 {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Container Principal */
+            .print-container {
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                display: block !important;
+            }
+
+            /* Cabeçalhos */
+            .print-header {
+                padding-bottom: 0.3rem !important;
+                margin-bottom: 0.3rem !important;
+                border-bottom-width: 2px !important;
+            }
+            .print-header h1 { font-size: 15pt !important; margin-bottom: 0.1rem !important; }
+            .print-header p { font-size: 9pt !important; line-height: 1.2 !important; }
+            .print-header h2 { font-size: 13pt !important; margin: 0.3rem 0 !important; padding: 0.2rem 0 !important; }
+
+            /* Seções */
+            .print-section-spacing { space-y: 0.6rem !important; }
+            
+            .print-section {
+                padding: 0.6rem 0.8rem !important;
+                margin-top: 0.4rem !important;
+                border-width: 1px !important;
+                border-radius: 6px !important;
+                box-shadow: none !important;
+            }
+            
+            .print-section-title {
+                margin-bottom: 0.5rem !important;
+                padding-bottom: 0.2rem !important;
+                font-size: 11pt !important;
+                border-bottom-width: 1px !important;
+            }
+
+            /* Caixas de Valores */
+            .print-dist-box {
+                padding: 0.5rem !important;
+                border-width: 1px !important;
+                margin-bottom: 0.3rem !important;
+            }
+            
+            .print-dist-row {
+                padding: 0.25rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+
+            /* Texto interno */
+            .print-text-lg { font-size: 10pt !important; }
+            .print-text-xl { font-size: 11pt !important; }
+            .print-text-2xl { font-size: 14pt !important; }
+
+            /* Grid */
+            .print-grid-cols-3 {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 0.75rem !important;
+            }
+            
+            .break-inside-avoid {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+    
+    <div class="w-full max-w-3xl bg-white rounded-lg shadow-lg p-8 sm:p-10 lg:p-12 print-container">
+
+        <!-- Cabeçalho -->
+        <header class="text-center border-b pb-4 mb-4 print-header">
+            <h1 class="text-3xl font-bold text-gray-800" contenteditable="false">Jarvis Inteligência Imobiliária</h1>
+            <p class="text-sm text-gray-500 mt-2 leading-relaxed">
+                Rua Soldado Eduardo dos Santos, 55, Ponta Verde, Maceió - Alagoas<br>
+                CNPJ: 49.086.785/0001-56
+            </p>
+        </header>
+
+        <!-- Dados Gerais -->
+        <div class="mb-6 print-header">
+            <h2 class="text-2xl font-semibold text-center text-gray-700 mb-4 bg-gray-50 py-2 rounded-lg">DEMONSTRATIVO FINANCEIRO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm print-grid-cols-3">
+                <div class="bg-gray-50 p-3 rounded-md border border-gray-100">
+                    <p class="font-semibold text-gray-600 text-xs uppercase tracking-wide">Corretor(a):</p>
+                    <p class="text-gray-900 font-medium text-base mt-1" contenteditable="true" id="nome-corretor" data-placeholder="Nome Completo"></p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-md border border-gray-100">
+                    <p class="font-semibold text-gray-600 text-xs uppercase tracking-wide">CPF/CNPJ:</p>
+                    <p class="text-gray-900 font-medium text-base mt-1" contenteditable="true" id="cpf-cnpj" data-placeholder="000.000.000-00"></p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-md border border-gray-100">
+                    <p class="font-semibold text-gray-600 text-xs uppercase tracking-wide">Data do Pagamento:</p>
+                    <p class="text-gray-900 font-medium text-base mt-1" contenteditable="true" id="data-pagamento" data-placeholder="dd/mm/aaaa"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="space-y-6 print-section-spacing">
+            
+            <!-- 1. Detalhes (SEM SDR) -->
+            <div class="border border-gray-200 rounded-xl p-6 print-section break-inside-avoid">
+                <h3 class="font-semibold text-xl text-gray-800 mb-4 border-b pb-2 print-section-title">1. Detalhes da Transação</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm print-text-lg">
+                    <p class="flex justify-between border-b border-dashed border-gray-200 pb-1"><strong class="text-gray-600">Imóvel:</strong> <span contenteditable="true" class="editable editable-wide font-medium" data-placeholder="Nome do Condomínio"></span></p>
+                    <p class="flex justify-between border-b border-dashed border-gray-200 pb-1"><strong class="text-gray-600">Cód. Sistema:</strong> <span contenteditable="true" class="editable editable-wide font-medium" data-placeholder="Código"></span></p>
+                    <p class="flex justify-between border-b border-dashed border-gray-200 pb-1"><strong class="text-gray-600">Tipo:</strong> <span contenteditable="true" class="editable editable-wide font-medium" data-placeholder="Venda/Locação"></span></p>
+                    <p class="flex justify-between border-b border-dashed border-gray-200 pb-1"><strong class="text-gray-600">Complemento:</strong> <span contenteditable="true" class="editable editable-wide font-medium" data-placeholder="Apto/Casa"></span></p>
+                    <p class="flex justify-between border-b border-dashed border-gray-200 pb-1"><strong class="text-gray-600">Gerente:</strong> <span contenteditable="true" class="editable editable-wide font-medium" data-placeholder="Nome do Gerente"></span></p>
+                </div>
+            </div>
+
+            <!-- 2. Cálculo -->
+            <div class="border border-gray-200 rounded-xl p-6 print-section break-inside-avoid">
+                <h3 class="font-semibold text-xl text-gray-800 mb-4 border-b pb-2 print-section-title">2. Cálculo da Comissão</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm print-text-lg">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-gray-600 text-xs uppercase">Valor Venda</p>
+                        <p class="font-bold text-gray-800 text-lg print-text-xl">R$ <span contenteditable="true" class="editable editable-wide" id="valor-venda" oninput="handleCurrencyInput(event)" data-placeholder="0,00"></span></p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-gray-600 text-xs uppercase">% Comissão Total</p>
+                        <p class="font-bold text-gray-800 text-lg print-text-xl"><span id="percentual-comissao" class="calculated">...</span>%</p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 print-dist-box">
+                        <p class="text-blue-700 font-bold text-xs uppercase">Comissão Bruta</p>
+                        <p class="font-bold text-blue-900 text-xl print-text-xl">R$ <span contenteditable="true" class="editable editable-wide" id="comissao-bruta" oninput="handleCurrencyInput(event)" data-placeholder="0,00"></span></p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg flex flex-col justify-center">
+                        <div class="flex justify-between items-center">
+                            <p class="text-gray-600 text-sm">Imposto (-):</p>
+                            <p class="font-medium text-gray-800"><span contenteditable="true" class="editable" id="perc-imposto" oninput="handleCurrencyInput(event)" data-placeholder="0,00"></span>%</p>
+                        </div>
+                    </div>
+                    <div class="bg-teal-50 p-4 rounded-lg md:col-span-2 border border-teal-100 print-dist-box">
+                        <div class="flex justify-between items-center">
+                            <p class="text-teal-800 font-bold uppercase tracking-wide text-sm">Comissão Líquida a Distribuir</p>
+                            <p class="font-black text-teal-900 text-2xl print-text-2xl">R$ <span id="comissao-liquida" class="calculated">...</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Distribuição -->
+            <div class="border border-gray-200 rounded-xl p-6 print-section break-inside-avoid">
+                <h3 class="font-semibold text-xl text-gray-800 mb-4 border-b pb-2 print-section-title">3. Distribuição da Comissão</h3>
+                <div class="space-y-4 print-section-spacing">
+                    
+                    <!-- Linha 1: Comercial (SEM SDR, GRID DE 2 COLUNAS) -->
+                    <div class="border border-indigo-200 rounded-lg p-4 print-dist-box bg-white shadow-sm">
+                        <div class="flex justify-between items-center bg-indigo-50 p-2 rounded-md mb-3 print-dist-row">
+                            <span class="font-bold text-indigo-900 text-lg print-text-xl">Comercial (47%)</span>
+                            <span class="font-black text-indigo-900 text-lg print-text-xl">R$ <span id="valor-comercial" class="calculated">...</span></span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm px-2 print-text-lg">
+                            <div class="text-center border-r border-indigo-100 last:border-0">
+                                <span class="block text-gray-500 text-xs">Corretor (65,96%)</span>
+                                <span class="font-bold text-gray-800 text-base">R$ <span id="valor-corretor" class="calculated">...</span></span>
+                            </div>
+                            <div class="text-center last:border-0">
+                                <span class="block text-gray-500 text-xs">Captador (34,04%)</span>
+                                <span class="font-bold text-gray-800 text-base">R$ <span id="valor-captador" class="calculated">...</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha 2: GRID (Jarvis, Diretoria, Gerente) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 print-grid-cols-3">
+                        
+                        <!-- Jarvis (38%) -->
+                        <div class="border border-orange-200 rounded-lg p-3 print-dist-box flex flex-col justify-center bg-white shadow-sm">
+                            <div class="text-center bg-orange-50 p-2 rounded-md h-full flex flex-col justify-center">
+                                <span class="block font-bold text-orange-800 text-sm mb-1">Jarvis (38%)</span>
+                                <span class="block font-black text-orange-900 text-xl print-text-xl">R$ <span id="valor-jarvis" class="calculated">...</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Diretoria (3%) -->
+                        <div class="border border-emerald-200 rounded-lg p-3 print-dist-box flex flex-col justify-center bg-white shadow-sm">
+                            <div class="text-center bg-emerald-50 p-2 rounded-md h-full flex flex-col justify-center">
+                                <span class="block font-bold text-emerald-800 text-sm mb-1">Diretoria (3%)</span>
+                                <span class="block font-black text-emerald-900 text-xl print-text-xl">R$ <span id="valor-diretoria" class="calculated">...</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Gerente (6%) -->
+                        <div class="border border-purple-200 rounded-lg p-3 print-dist-box flex flex-col justify-center bg-white shadow-sm">
+                            <div class="text-center bg-purple-50 p-2 rounded-md h-full flex flex-col justify-center">
+                                <span class="block font-bold text-purple-800 text-sm mb-1">Gerente (6%)</span>
+                                <span class="block font-black text-purple-900 text-xl print-text-xl">R$ <span id="valor-gerente" class="calculated">...</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha 3: Operacional -->
+                    <div class="border border-pink-200 rounded-lg p-4 print-dist-box bg-white shadow-sm">
+                        <div class="flex justify-between items-center bg-pink-50 p-2 rounded-md mb-3 print-dist-row">
+                            <span class="font-bold text-pink-900 text-lg print-text-xl">Operacional (6%)</span>
+                            <span class="font-black text-pink-900 text-lg print-text-xl">R$ <span id="valor-operacional" class="calculated">...</span></span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 text-sm px-1 text-center print-text-lg">
+                            <div><span class="block text-gray-500 text-xs">Store (40%)</span><span class="font-bold text-gray-800">R$ <span id="valor-store" class="calculated">...</span></span></div>
+                            <div><span class="block text-gray-500 text-xs">Mkt (20%)</span><span class="font-bold text-gray-800">R$ <span id="valor-marketing" class="calculated">...</span></span></div>
+                            <div><span class="block text-gray-500 text-xs">Dados (20%)</span><span class="font-bold text-gray-800">R$ <span id="valor-dados" class="calculated">...</span></span></div>
+                            <div><span class="block text-gray-500 text-xs">Adm (20%)</span><span class="font-bold text-gray-800">R$ <span id="valor-admin" class="calculated">...</span></span></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="text-center mt-8 no-print space-x-4">
+            <button onclick="window.print()" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition-colors shadow-lg text-lg">
+                Imprimir / Salvar PDF
+            </button>
+            <button onclick="limparCampos()" class="bg-gray-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-gray-700 transition-colors shadow-lg text-lg">
+                Limpar Campos
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function parseCurrency(value) {
+            if (typeof value !== 'string') return 0;
+            let numberString = value.replace(/[^\d,]/g, '').replace(',', '.');
+            return parseFloat(numberString) || 0;
+        }
+
+        function formatCurrency(value) {
+            if (isNaN(value)) return '0,00';
+            return value.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        function handleCurrencyInput(event) {
+            const element = event.target;
+            let value = element.innerText.replace(/\D/g, '');
+            if (value === '') {
+                element.innerText = '';
+            } else {
+                const number = parseInt(value, 10) / 100;
+                element.innerText = number.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(element);
+            range.collapse(false); 
+            selection.removeAllRanges();
+            selection.addRange(range);
+            realizarCalculos();
+        }
+
+        function realizarCalculos() {
+            const valorVendaEl = document.getElementById('valor-venda');
+            const comissaoBrutaEl = document.getElementById('comissao-bruta');
+            const percentualEl = document.getElementById('percentual-comissao');
+            const valorVenda = parseCurrency(valorVendaEl.innerText);
+            const comissaoBruta = parseCurrency(comissaoBrutaEl.innerText);
+
+            if (valorVenda > 0 && comissaoBruta > 0) {
+                const percentual = (comissaoBruta / valorVenda) * 100;
+                percentualEl.innerText = percentual.toFixed(2).replace('.', ',');
+            } else {
+                percentualEl.innerText = '...';
+            }
+
+            const percImpostoEl = document.getElementById('perc-imposto');
+            const percImposto = parseCurrency(percImpostoEl.innerText) / 100;
+            const comissaoLiquida = comissaoBruta * (1 - percImposto);
+            document.getElementById('comissao-liquida').innerText = formatCurrency(comissaoLiquida);
+
+            const valorComercial = comissaoLiquida * 0.47;
+            const valorJarvis = comissaoLiquida * 0.38;
+            const valorDiretoria = comissaoLiquida * 0.03;
+            const valorGerente = comissaoLiquida * 0.06;
+            const valorOperacional = comissaoLiquida * 0.06;
+
+            document.getElementById('valor-comercial').innerText = formatCurrency(valorComercial);
+            document.getElementById('valor-jarvis').innerText = formatCurrency(valorJarvis);
+            document.getElementById('valor-diretoria').innerText = formatCurrency(valorDiretoria);
+            document.getElementById('valor-gerente').innerText = formatCurrency(valorGerente);
+            document.getElementById('valor-operacional').innerText = formatCurrency(valorOperacional);
+
+            // Cálculos comerciais ajustados (Sem SDR)
+            const valorCorretor = valorComercial * 0.6596;
+            const valorCaptador = valorComercial * 0.3404;
+            document.getElementById('valor-corretor').innerText = formatCurrency(valorCorretor);
+            document.getElementById('valor-captador').innerText = formatCurrency(valorCaptador);
+             
+            const valorStore = valorOperacional * 0.40;
+            const valorMarketing = valorOperacional * 0.20;
+            const valorDados = valorOperacional * 0.20;
+            const valorAdmin = valorOperacional * 0.20;
+            document.getElementById('valor-store').innerText = formatCurrency(valorStore);
+            document.getElementById('valor-marketing').innerText = formatCurrency(valorMarketing);
+            document.getElementById('valor-dados').innerText = formatCurrency(valorDados);
+            document.getElementById('valor-admin').innerText = formatCurrency(valorAdmin);
+        }
+
+        function limparCampos() {
+            if (confirm("Tem certeza que deseja limpar todos os campos preenchidos?")) {
+                document.querySelectorAll('[contenteditable="true"]').forEach(c => c.innerHTML = '');
+                document.querySelectorAll('.calculated').forEach(c => c.innerText = '...');
+            }
+        }
+    </script>
+</body>
+</html>
