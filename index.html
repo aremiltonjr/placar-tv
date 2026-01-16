@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar TV Imobiliária - Final V18</title>
+    <title>Placar 2026 - V21 (Valor Real)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,13 +43,13 @@
 <body class="bg-slate-900">
 
     <div id="loading">
-        <div class="text-6xl animate-bounce mb-4">🏠</div>
-        <p class="text-blue-400 font-bold text-xl animate-pulse">Carregando Placar...</p>
+        <div class="text-6xl animate-bounce mb-4">🚀</div>
+        <p class="text-blue-400 font-bold text-xl animate-pulse">Carregando Dados 2026...</p>
     </div>
 
     <div id="slide1" class="slide active">
         <header class="h-[10%] flex items-center justify-center">
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 uppercase tracking-widest drop-shadow-lg">🏆 Ranking Geral</h1>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 uppercase tracking-widest drop-shadow-lg">🏆 Ranking 2026</h1>
         </header>
         
         <div class="h-[40%] w-full mb-2 border-b border-slate-700/50 pb-2">
@@ -101,7 +101,7 @@
 
     <div id="slide2" class="slide">
         <header class="h-[10%] flex items-center justify-center">
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300 uppercase tracking-widest drop-shadow-lg">📅 Trimestre (Out/Nov/Dez)</h1>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300 uppercase tracking-widest drop-shadow-lg">📅 1º Trimestre (Jan/Fev/Mar)</h1>
         </header>
         <div class="grid grid-cols-12 gap-6 h-[88%] w-full">
             <div class="col-span-7 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
@@ -111,7 +111,7 @@
             <div class="col-span-5 flex flex-col gap-4 h-full">
                 <div class="grid grid-cols-2 gap-3 h-[35%]">
                     <div class="kpi-card border-l-blue-500">
-                        <p class="text-slate-400 text-xs font-bold uppercase">Valor Geral de Venda</p>
+                        <p class="text-slate-400 text-xs font-bold uppercase">VGV Total (Trimestre)</p>
                         <p class="text-xl font-bold text-white truncate" id="kpi-vgv">R$ 0</p>
                     </div>
                     <div class="kpi-card border-l-green-500">
@@ -120,7 +120,7 @@
                     </div>
                     <div class="kpi-card border-l-yellow-500">
                         <p class="text-slate-400 text-xs font-bold uppercase">Meta Trimestre</p>
-                        <p class="text-xl font-bold text-yellow-400 truncate" id="kpi-meta">R$ 36.000.000</p>
+                        <p class="text-xl font-bold text-yellow-400 truncate" id="kpi-meta">R$ 42.500.000</p>
                     </div>
                     <div class="kpi-card border-l-red-500">
                         <p class="text-slate-400 text-xs font-bold uppercase">Saldo Meta</p>
@@ -137,7 +137,7 @@
 
     <div id="slide3" class="slide">
         <header class="h-[10%] flex items-center justify-center">
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase tracking-widest drop-shadow-lg">⚔️ Duelo de Equipes (Trimestre)</h1>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase tracking-widest drop-shadow-lg">⚔️ Duelo de Equipes</h1>
         </header>
         <div class="grid grid-cols-2 gap-8 h-[85%] w-full px-4">
             
@@ -171,7 +171,7 @@
     <script>
         const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?gid=828224418&single=true&output=csv'; 
         const URL_CSV = 'https://corsproxy.io/?' + encodeURIComponent(GOOGLE_CSV);
-        const META_TRIMESTRAL = 36000000;
+        const META_TRIMESTRAL = 42500000;
         
         function csvParaArray(strData, strDelimiter) {
             strDelimiter = (strDelimiter || ",");
@@ -199,14 +199,14 @@
 
         async function carregarDados() {
             try {
-                const response = await fetch(URL_CSV);
+                const response = await fetch(URL_CSV + '&t=' + Date.now());
                 if (!response.ok) throw new Error("Status: " + response.status);
                 
                 const text = await response.text();
                 const rows = csvParaArray(text, ",");
                 
                 let vendasTrimestre = [];
-                let vendasMesAMes = { '10': 0, '11': 0, '12': 0 };
+                let vendasMesAMes = { '1': 0, '2': 0, '3': 0 };
                 let corretores = {};
                 let equipes = {};
                 let totalTrimValorReal = 0;
@@ -216,31 +216,31 @@
                     const col = rows[i];
                     if (!col || col.length < 5) continue; 
 
-                    const strData = col[1] || "";
+                    // *** MAPEAMENTO DE COLUNAS ATUALIZADO ***
+                    const corretor  = col[0] ? col[0].trim() : "Desconhecido"; 
+                    const strData   = col[1] || "";
+                    const vgv       = parseMoney(col[2]); 
+                    const valorReal = parseMoney(col[3]); // <--- COLUNA D (Index 3)
+                    const equipe    = col[4] ? col[4].trim() : 'Geral'; // <--- COLUNA E (Index 4)
+                    const foto      = col[5] ? col[5].trim() : ''; // <--- COLUNA F (Index 5)
+
                     const dataParts = strData.split('/'); 
                     if(dataParts.length !== 3) continue; 
                     
                     const mes = parseInt(dataParts[1]);
                     const ano = parseInt(dataParts[2]);
 
-                    const vgv = parseMoney(col[2]); 
-                    const valorReal = parseMoney(col[3]);
-                    const corretor = col[6] ? col[6].trim() : "Desconhecido"; 
-                    const equipe = col[16] ? col[16].trim() : 'Geral';
-                    const foto = col[17] ? col[17].trim() : '';
-
                     if (corretor === "Lauro Braga") continue;
 
-                    if (ano === 2025 || ano === 2024) { 
+                    if (ano === 2026) { 
                         if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                         corretores[corretor].vgv += vgv;
 
-                        // Trimestre
-                        if (mes >= 10 && mes <= 12) {
+                        if (mes >= 1 && mes <= 3) {
                             vendasTrimestre.push({ corretor, vgv });
                             vendasMesAMes[mes] += vgv;
                             totalTrimVGV += vgv;
-                            totalTrimValorReal += valorReal;
+                            totalTrimValorReal += valorReal; // SOMA VALOR REAL
 
                             if (!equipes[equipe]) equipes[equipe] = { nome: equipe, vgv: 0, corretores: {} };
                             equipes[equipe].vgv += vgv;
@@ -265,7 +265,6 @@
             // 1. ANUAL
             const rankingAnual = Object.values(corretores).sort((a,b) => b.vgv - a.vgv);
             
-            // PÓDIO
             const updatePodium = (rank, prefix, heightClass) => {
                 if(rankingAnual[rank]) {
                     document.getElementById(`name-${prefix}`).innerText = rankingAnual[rank].nome;
@@ -282,18 +281,15 @@
             updatePodium(1, 'top2', 'place-2');
             updatePodium(2, 'top3', 'place-3');
 
-            // --- ESCALA UNIFICADA (PAG 1) ---
             let maxVGV = 0;
             if (rankingAnual[3]) maxVGV = rankingAnual[3].vgv * 1.1; 
 
-            // ESQUERDA (4º ao 9º)
             const partEsquerda = rankingAnual.slice(3, 9);
             chartRankingEsquerda.data.labels = partEsquerda.map((c, i) => `${i+4}º ${c.nome}`);
             chartRankingEsquerda.data.datasets[0].data = partEsquerda.map(c => c.vgv);
             if (maxVGV > 0) chartRankingEsquerda.options.scales.x.max = maxVGV; 
             chartRankingEsquerda.update();
 
-            // DIREITA (10º ao 15º)
             const partDireita = rankingAnual.slice(9, 15);
             chartRankingDireita.data.labels = partDireita.map((c, i) => `${i+10}º ${c.nome}`);
             chartRankingDireita.data.datasets[0].data = partDireita.map(c => c.vgv);
@@ -308,6 +304,8 @@
             });
 
             document.getElementById('kpi-vgv').innerText = formatMoney(totalTrimVGV);
+            
+            // MOSTRANDO VALOR REAL
             document.getElementById('kpi-real').innerText = formatMoney(totalTrimValorReal);
             
             const saldo = totalTrimVGV - META_TRIMESTRAL;
@@ -316,12 +314,12 @@
             elSaldo.className = `text-xl font-bold truncate ${saldo >= 0 ? 'text-green-400' : 'text-red-400'}`;
             if(saldo > 0) elSaldo.innerText = "+" + elSaldo.innerText;
 
-            const rankingTrim = Object.entries(trimByCorretor).map(([n,v])=>({n,v})).sort((a,b)=>b.v - a.v); // MOSTRA TODOS
+            const rankingTrim = Object.entries(trimByCorretor).map(([n,v])=>({n,v})).sort((a,b)=>b.v - a.v); 
             chartTrimestre.data.labels = rankingTrim.map(c => c.n);
             chartTrimestre.data.datasets[0].data = rankingTrim.map(c => c.v);
             chartTrimestre.update();
 
-            chartMes.data.datasets[0].data = [vendasMesAMes['10'], vendasMesAMes['11'], vendasMesAMes['12']];
+            chartMes.data.datasets[0].data = [vendasMesAMes['1'], vendasMesAMes['2'], vendasMesAMes['3']];
             chartMes.update();
 
             // 3. EQUIPES
@@ -348,14 +346,11 @@
         function updateTeamData(eq, chartObj, prefix, color) {
             document.getElementById(`nome-${prefix}`).innerText = eq.nome;
             document.getElementById(`total-${prefix}`).innerText = formatMoney(eq.vgv);
-            
-            // FILTRO DE GERENTES
             const gerentes = ["Felipe de Jesus", "Raphael Lisboa"];
-
             const rankEq = Object.entries(eq.corretores)
-                .filter(([nome, valor]) => !gerentes.includes(nome) && valor > 0) // Remove Gerentes
+                .filter(([nome, valor]) => !gerentes.includes(nome) && valor > 0)
                 .map(([n,v])=>({n,v}))
-                .sort((a,b)=>b.v - a.v); // MOSTRA TODOS
+                .sort((a,b)=>b.v - a.v); 
             
             chartObj.data.labels = rankEq.map(c => c.n);
             chartObj.data.datasets[0].data = rankEq.map(c => c.v);
@@ -365,16 +360,14 @@
 
         const commonOptions = {
             indexAxis: 'y', maintainAspectRatio: false, responsive: true,
-            layout: { padding: { right: 60 } }, // AUMENTADO PARA DAR ESPAÇO AO RÓTULO EXTERNO
+            layout: { padding: { right: 60 } }, 
             plugins: { 
                 legend: { display: false }, 
                 datalabels: { 
                     color: 'white', anchor: 'end', 
-                    // LÓGICA INTELIGENTE: SE BARRA PEQUENA, RÓTULO FORA
                     align: (ctx) => {
                         const val = ctx.dataset.data[ctx.dataIndex];
                         const max = Math.max(...ctx.dataset.data); 
-                        // Se valor for < 15% do máximo, joga pra fora ('end')
                         return (val < max * 0.15) ? 'end' : 'start';
                     },
                     clamp: true, 
@@ -388,7 +381,6 @@
             }
         };
 
-        // CRIANDO OS GRÁFICOS
         let chartRankingEsquerda = new Chart(document.getElementById('chartRankingEsquerda'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
         let chartRankingDireita = new Chart(document.getElementById('chartRankingDireita'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
 
@@ -398,7 +390,7 @@
             type: 'bar', 
             plugins: [ChartDataLabels],
             data: { 
-                labels: ['Outubro', 'Novembro', 'Dezembro'], 
+                labels: ['Janeiro', 'Fevereiro', 'Março'], 
                 datasets: [ { label: 'Realizado', data: [0, 0, 0], backgroundColor: '#6366f1', borderRadius: 4 } ] 
             }, 
             options: { 
