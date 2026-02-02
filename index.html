@@ -192,11 +192,13 @@
     </div>
 
     <script>
-        // --- ATENÇÃO: COLE O LINK CSV AQUI DENTRO DAS ASPAS ---
-        const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?output=csv'; 
+        // --- COLE SEU LINK CSV AQUI (Mantenha as aspas) ---
+        const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?gid=828224418&single=true&output=csv'; 
         
-        // NOVO PROXY QUE EVITA ERRO 403
-        const URL_CSV = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(GOOGLE_CSV);
+        // V25: CONEXÃO DIRETA (SEM PROXY) PARA EVITAR ERROS "FAILED TO FETCH"
+        // O timestamp é adicionado aqui para garantir que o link seja único a cada atualização
+        const URL_CSV = GOOGLE_CSV + '&t=' + Date.now();
+        
         const META_TRIMESTRAL = 42500000;
         
         function csvParaArray(strData, strDelimiter) {
@@ -225,9 +227,10 @@
 
         async function carregarDados() {
             try {
-                // TIMESTAMP PARA NÃO FAZER CACHE
-                const response = await fetch(URL_CSV + '&t=' + Date.now());
-                if (!response.ok) throw new Error("Status: " + response.status);
+                // FETCH DIRETO (Sem parâmetros extras aqui, pois já estão na URL_CSV)
+                const response = await fetch(URL_CSV);
+                
+                if (!response.ok) throw new Error("Status: " + response.status + " - Verifique o link CSV");
                 
                 const text = await response.text();
                 const rows = csvParaArray(text, ",");
@@ -282,12 +285,12 @@
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').innerHTML = `<div class="bg-red-900 p-6 rounded-xl border border-red-500 text-center"><h2 class="text-3xl mb-2">⚠️ Erro</h2><p>${error.message}</p></div>`;
+                // Mensagem de erro mais amigável
+                document.getElementById('loading').innerHTML = `<div class="bg-red-900 p-6 rounded-xl border border-red-500 text-center"><h2 class="text-3xl mb-2">⚠️ Erro de Conexão</h2><p class="text-lg">O navegador bloqueou o acesso à planilha.</p><p class="text-sm mt-2 opacity-75">${error.message}</p></div>`;
             }
         }
 
         function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal) {
-            
             const rankingAnual = Object.values(corretores).sort((a,b) => b.vgv - a.vgv);
             
             const updatePodium = (rank, prefix, heightClass) => {
@@ -453,8 +456,9 @@
         slideInterval = setInterval(proximoSlide, 30000);
 
         carregarDados();
-        setInterval(carregarDados, 120000);
+        setInterval(carregarDados, 120000); // Atualiza a cada 2 min
     </script>
 </body>
 </html>
+
 
