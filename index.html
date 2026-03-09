@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar 2026 - Final V26 (Conexão Blindada)</title>
+    <title>Placar 2026 - Final V27 (Conexão Direta)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -67,7 +67,7 @@
 
     <div id="loading">
         <div class="text-6xl animate-bounce mb-4">🚀</div>
-        <p class="text-blue-400 font-bold text-xl animate-pulse">Conectando aos Dados...</p>
+        <p class="text-blue-400 font-bold text-xl animate-pulse">Conectando ao Google...</p>
     </div>
 
     <button id="prevBtn" class="nav-btn" onclick="mudarSlideManual(-1)">&#10094;</button>
@@ -199,8 +199,7 @@
         <div class="grid grid-cols-12 gap-6 h-[88%] w-full px-4 pb-4">
             <div class="col-span-3 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
                 <h3 class="text-lg font-bold text-slate-400 mb-4 text-center border-b border-slate-700 pb-2 uppercase tracking-wide">⏪ Top 3 (Fevereiro)</h3>
-                <div id="top-mes-anterior" class="flex flex-col gap-4 flex-grow justify-center">
-                    </div>
+                <div id="top-mes-anterior" class="flex flex-col gap-4 flex-grow justify-center"></div>
             </div>
 
             <div class="col-span-9 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
@@ -211,8 +210,8 @@
     </div>
 
     <script>
-        // SEU LINK ORIGINAL
-        const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?gid=828224418&single=true&output=csv'; 
+        // --- COLE SEU LINK CSV AQUI (Mantenha as aspas) ---
+        const GOOGLE_CSV = 'COLE_AQUI_O_SEU_LINK_CSV'; 
         
         const META_TRIMESTRAL = 42500000;
         
@@ -242,18 +241,17 @@
 
         async function carregarDados() {
             try {
-                // SOLUÇÃO BLINDADA: Adicionamos o tempo para evitar cache, 
-                // e usamos o formato JSON do AllOrigins para evitar bloqueio de CORS na TV.
-                const linkComCacheBuster = GOOGLE_CSV + '&t=' + Date.now();
-                const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(linkComCacheBuster);
+                // V27: CONEXÃO DIRETA (Sem uso de Proxy)
+                // Usamos o cache: 'no-store' para garantir que o navegador sempre baixe o novo.
+                const URL_DIRETA = GOOGLE_CSV + '&t=' + Date.now();
+                const response = await fetch(URL_DIRETA, { cache: 'no-store' });
                 
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error("Falha na comunicação com o servidor.");
+                if (!response.ok) throw new Error(`Google bloqueou a leitura (Status ${response.status}). Verifique se a planilha está pública.`);
                 
-                const data = await response.json();
-                const text = data.contents; 
-                
-                if (!text) throw new Error("A planilha retornou vazia.");
+                const text = await response.text();
+                if (!text || text.includes('<!DOCTYPE html>')) {
+                    throw new Error("A planilha retornou uma página HTML em vez de dados. Verifique a configuração de 'Publicar na Web'.");
+                }
 
                 const rows = csvParaArray(text, ",");
                 
@@ -320,7 +318,22 @@
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading').innerHTML = `<div class="bg-red-900 p-6 rounded-xl border border-red-500 text-center"><h2 class="text-3xl mb-2">⚠️ Erro de Conexão</h2><p class="text-lg">O navegador bloqueou o acesso ou o serviço falhou.</p><p class="text-sm mt-2 opacity-75">${error.message}</p></div>`;
+                document.getElementById('loading').innerHTML = `
+                    <div class="bg-red-900 p-8 rounded-xl border-2 border-red-500 text-center max-w-2xl shadow-2xl">
+                        <h2 class="text-4xl font-bold mb-4 text-white">⚠️ Acesso Negado pelo Google</h2>
+                        <p class="text-xl text-red-200 mb-6">A planilha está bloqueada para acesso público.</p>
+                        <div class="bg-black/30 p-4 rounded-lg text-left text-sm text-gray-300">
+                            <p class="font-bold text-white mb-2">Para corrigir:</p>
+                            <ol class="list-decimal pl-5 space-y-2">
+                                <li>Abra a planilha no Google Sheets.</li>
+                                <li>Clique em <b>Compartilhar</b> e mude para <b>"Qualquer pessoa com o link"</b>.</li>
+                                <li>Vá em <b>Arquivo > Compartilhar > Publicar na Web</b>.</li>
+                                <li>Na parte inferior, abra <b>"Conteúdo publicado e configurações"</b>.</li>
+                                <li>Desmarque a caixa que diz "Exigir login com a conta da empresa...".</li>
+                            </ol>
+                        </div>
+                        <p class="text-xs mt-4 opacity-50 font-mono">${error.message}</p>
+                    </div>`;
             }
         }
 
@@ -401,7 +414,7 @@
             updateTeamData(winner, chartEqA, 'eq1', '#10b981'); 
             updateTeamData(loser, chartEqB, 'eq2', '#3b82f6'); 
 
-            // --- RENDERIZAÇÃO PÁGINA 4 (MENSAL) ---
+            // --- PÁGINA 4 ---
             const rankMesAtual = Object.values(corretoresMesAtual).sort((a,b) => b.vgv - a.vgv);
             chartRankingMesAtual.data.labels = rankMesAtual.map(c => c.nome);
             chartRankingMesAtual.data.datasets[0].data = rankMesAtual.map(c => c.vgv);
@@ -412,7 +425,7 @@
             divTopAnt.innerHTML = '';
 
             if (rankMesPassado.length === 0) {
-                divTopAnt.innerHTML = '<p class="text-center text-slate-500 italic mt-10">Sem dados de venda em Fevereiro.</p>';
+                divTopAnt.innerHTML = '<p class="text-center text-slate-500 italic mt-10">Sem vendas em Fevereiro.</p>';
             } else {
                 rankMesPassado.forEach((c, i) => {
                     const pos = i + 1;
@@ -503,7 +516,6 @@
         let chartEqA = new Chart(document.getElementById('chartEquipeA'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6' }] }, options: commonOptions });
         let chartEqB = new Chart(document.getElementById('chartEquipeB'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#ef4444' }] }, options: commonOptions });
 
-        // Gráfico Mensal (Página Nova)
         let chartRankingMesAtual = new Chart(document.getElementById('chartRankingMesAtual'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#14b8a6', borderRadius: 4 }] }, options: commonOptions });
 
         let currentSlide = 1;
