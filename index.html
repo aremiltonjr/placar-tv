@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar 2026 - Final V24 (Correção 403)</title>
+    <title>Placar 2026 - Final V25 (Com Nova Página Mensal)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -191,14 +191,34 @@
         </div>
     </div>
 
+    <div id="slide4" class="slide">
+        <header class="h-[10%] flex items-center justify-center">
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400 uppercase tracking-widest drop-shadow-lg">🔥 Ranking Mensal (Março)</h1>
+        </header>
+        
+        <div class="grid grid-cols-12 gap-6 h-[88%] w-full px-4 pb-4">
+            
+            <div class="col-span-3 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
+                <h3 class="text-lg font-bold text-slate-400 mb-4 text-center border-b border-slate-700 pb-2 uppercase tracking-wide">⏪ Top 3 (Fevereiro)</h3>
+                
+                <div id="top-mes-anterior" class="flex flex-col gap-4 flex-grow justify-center">
+                    </div>
+            </div>
+
+            <div class="col-span-9 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
+                <h3 class="text-xl font-bold text-white mb-2 uppercase tracking-wide">Vendas no Mês Atual (VGV)</h3>
+                <div class="chart-container flex-grow"><canvas id="chartRankingMesAtual"></canvas></div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         // --- COLE SEU LINK CSV AQUI (Mantenha as aspas) ---
         const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?gid=828224418&single=true&output=csv'; 
         
-        // V25: CONEXÃO DIRETA (SEM PROXY) PARA EVITAR ERROS "FAILED TO FETCH"
-        // O timestamp é adicionado aqui para garantir que o link seja único a cada atualização
+        // CONEXÃO DIRETA COM O GOOGLE
         const URL_CSV = GOOGLE_CSV + '&t=' + Date.now();
-        
         const META_TRIMESTRAL = 42500000;
         
         function csvParaArray(strData, strDelimiter) {
@@ -227,9 +247,7 @@
 
         async function carregarDados() {
             try {
-                // FETCH DIRETO (Sem parâmetros extras aqui, pois já estão na URL_CSV)
                 const response = await fetch(URL_CSV);
-                
                 if (!response.ok) throw new Error("Status: " + response.status + " - Verifique o link CSV");
                 
                 const text = await response.text();
@@ -241,6 +259,10 @@
                 let equipes = {};
                 let totalTrimValorReal = 0;
                 let totalTrimVGV = 0;
+
+                // --- NOVAS VARIÁVEIS PARA A PÁGINA MENSAL ---
+                let corretoresMesAtual = {}; // Mês 3 (Março)
+                let corretoresMesPassado = {}; // Mês 2 (Fevereiro)
 
                 for (let i = 1; i < rows.length; i++) {
                     const col = rows[i];
@@ -262,9 +284,11 @@
                     if (corretor === "Lauro Braga") continue;
 
                     if (ano === 2026) { 
+                        // Ranking Geral Anual
                         if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                         corretores[corretor].vgv += vgv;
 
+                        // Trimestre Geral
                         if (mes >= 1 && mes <= 3) {
                             vendasTrimestre.push({ corretor, vgv });
                             vendasMesAMes[mes] += vgv;
@@ -276,21 +300,35 @@
                             if (!equipes[equipe].corretores[corretor]) equipes[equipe].corretores[corretor] = 0;
                             equipes[equipe].corretores[corretor] += vgv;
                         }
+
+                        // --- FILTROS DA NOVA PÁGINA ---
+                        // Vendas do Mês Atual (Março = 3)
+                        if (mes === 3) {
+                            if (!corretoresMesAtual[corretor]) corretoresMesAtual[corretor] = { nome: corretor, vgv: 0, foto: foto };
+                            corretoresMesAtual[corretor].vgv += vgv;
+                        }
+
+                        // Vendas do Mês Passado (Fevereiro = 2)
+                        if (mes === 2) {
+                            if (!corretoresMesPassado[corretor]) corretoresMesPassado[corretor] = { nome: corretor, vgv: 0, foto: foto };
+                            corretoresMesPassado[corretor].vgv += vgv;
+                        }
                     }
                 }
 
-                atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal);
+                atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal, corretoresMesAtual, corretoresMesPassado);
                 document.getElementById('loading').style.opacity = '0';
                 setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
 
             } catch (error) {
                 console.error(error);
-                // Mensagem de erro mais amigável
                 document.getElementById('loading').innerHTML = `<div class="bg-red-900 p-6 rounded-xl border border-red-500 text-center"><h2 class="text-3xl mb-2">⚠️ Erro de Conexão</h2><p class="text-lg">O navegador bloqueou o acesso à planilha.</p><p class="text-sm mt-2 opacity-75">${error.message}</p></div>`;
             }
         }
 
-        function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal) {
+        function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes, totalTrimVGV, totalTrimValorReal, corretoresMesAtual, corretoresMesPassado) {
+            
+            // --- PÁGINA 1: ANUAL ---
             const rankingAnual = Object.values(corretores).sort((a,b) => b.vgv - a.vgv);
             
             const updatePodium = (rank, prefix, heightClass) => {
@@ -324,6 +362,7 @@
             if (maxVGV > 0) chartRankingDireita.options.scales.x.max = maxVGV; 
             chartRankingDireita.update();
 
+            // --- PÁGINA 2: TRIMESTRE ---
             let trimByCorretor = {};
             vendasTrimestre.forEach(v => {
                 if(!trimByCorretor[v.corretor]) trimByCorretor[v.corretor] = 0;
@@ -347,6 +386,7 @@
             chartMes.data.datasets[0].data = [vendasMesAMes['1'], vendasMesAMes['2'], vendasMesAMes['3']];
             chartMes.update();
 
+            // --- PÁGINA 3: EQUIPES ---
             const eqRaphael = equipes["Time Raphael"] || { nome: "Time Raphael", vgv: 0, corretores: {} };
             const eqFelipe = equipes["Time Felipe"] || { nome: "Time Felipe", vgv: 0, corretores: {} };
             
@@ -365,6 +405,49 @@
 
             updateTeamData(winner, chartEqA, 'eq1', '#10b981'); 
             updateTeamData(loser, chartEqB, 'eq2', '#3b82f6'); 
+
+
+            // --- PÁGINA 4: MENSAL (NOVO) ---
+            
+            // 4.1 Gráfico Principal (Março)
+            const rankMesAtual = Object.values(corretoresMesAtual).sort((a,b) => b.vgv - a.vgv);
+            chartRankingMesAtual.data.labels = rankMesAtual.map(c => c.nome);
+            chartRankingMesAtual.data.datasets[0].data = rankMesAtual.map(c => c.vgv);
+            chartRankingMesAtual.update();
+
+            // 4.2 Top 3 Lateral (Fevereiro)
+            const rankMesPassado = Object.values(corretoresMesPassado).sort((a,b) => b.vgv - a.vgv).slice(0, 3);
+            const divTopAnt = document.getElementById('top-mes-anterior');
+            divTopAnt.innerHTML = '';
+
+            if (rankMesPassado.length === 0) {
+                divTopAnt.innerHTML = '<p class="text-center text-slate-500 italic mt-10">Sem dados registrados em Fevereiro.</p>';
+            } else {
+                rankMesPassado.forEach((c, i) => {
+                    const pos = i + 1;
+                    // Medalhas e Cores
+                    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : '🥉';
+                    const colorClasses = pos === 1 
+                        ? 'border-yellow-500/50 shadow-[0_0_15px_rgba(250,204,21,0.15)] text-yellow-400' 
+                        : pos === 2 
+                            ? 'border-gray-400/50 text-gray-300' 
+                            : 'border-orange-500/50 text-orange-400';
+
+                    // Imagem de Fundo (Se não tiver foto, fica cinza)
+                    const bgStyle = c.foto ? `background-image: url('${c.foto}')` : `background-color: #475569`;
+
+                    divTopAnt.innerHTML += `
+                        <div class="flex items-center gap-4 bg-slate-900 p-4 rounded-xl border ${colorClasses}">
+                            <div class="text-4xl drop-shadow-md w-10 text-center">${medal}</div>
+                            <div class="w-14 h-14 rounded-full border-2 border-white/20 flex-shrink-0 bg-cover bg-center" style="${bgStyle}"></div>
+                            <div class="flex-grow min-w-0">
+                                <p class="font-bold text-white text-lg truncate leading-tight">${c.nome}</p>
+                                <p class="text-sm font-bold opacity-90 mt-1">${formatMoney(c.vgv)}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         function updateTeamData(eq, chartObj, prefix, color) {
@@ -405,60 +488,6 @@
             }
         };
 
+        // CRIANDO OS GRÁFICOS
         let chartRankingEsquerda = new Chart(document.getElementById('chartRankingEsquerda'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
-        let chartRankingDireita = new Chart(document.getElementById('chartRankingDireita'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
-
-        let chartTrimestre = new Chart(document.getElementById('chartTrimestreRanking'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: (ctx) => ctx.dataIndex===0 ? '#10b981' : '#3b82f6', borderRadius: 4 }] }, options: commonOptions });
-        
-        let chartMes = new Chart(document.getElementById('chartMesAMes'), { 
-            type: 'bar', 
-            plugins: [ChartDataLabels],
-            data: { 
-                labels: ['Janeiro', 'Fevereiro', 'Março'], 
-                datasets: [ { label: 'Realizado', data: [0, 0, 0], backgroundColor: '#6366f1', borderRadius: 4 } ] 
-            }, 
-            options: { 
-                maintainAspectRatio: false, 
-                layout: { padding: { top: 30 } }, 
-                plugins: {
-                    legend: { display: false }, 
-                    datalabels: { color: 'white', anchor: 'end', align: 'end', formatter: (val) => formatMoney(val), font: { weight: 'bold', size: 16 } }
-                },
-                scales: { y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { display: false } }, x: { grid: { display: false } } } 
-            } 
-        });
-
-        let chartEqA = new Chart(document.getElementById('chartEquipeA'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82f6' }] }, options: commonOptions });
-        let chartEqB = new Chart(document.getElementById('chartEquipeB'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#ef4444' }] }, options: commonOptions });
-
-        let currentSlide = 1;
-        let slideInterval;
-
-        function mostrarSlide(n) {
-            const slides = document.querySelectorAll('.slide');
-            slides.forEach(el => el.classList.remove('active'));
-            if (n > slides.length) currentSlide = 1;
-            else if (n < 1) currentSlide = slides.length;
-            else currentSlide = n;
-            document.getElementById(`slide${currentSlide}`).classList.add('active');
-        }
-
-        function proximoSlide() {
-            mostrarSlide(currentSlide + 1);
-        }
-
-        function mudarSlideManual(n) {
-            clearInterval(slideInterval);
-            mostrarSlide(currentSlide + n);
-            slideInterval = setInterval(proximoSlide, 30000);
-        }
-
-        slideInterval = setInterval(proximoSlide, 30000);
-
-        carregarDados();
-        setInterval(carregarDados, 120000); // Atualiza a cada 2 min
-    </script>
-</body>
-</html>
-
-
+        let chartRankingDireita = new Chart(document.getElementById('chartRankingDireita'), { type: 'bar', plugins: [ChartDataLabels], data: { labels: [], datasets: [{ data: [], backgroundColor: '#3b82
