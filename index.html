@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar 2026 - Final V27 (Conexão Direta)</title>
+    <title>Placar 2026 - 2º Trimestre (Abril)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -67,7 +67,7 @@
 
     <div id="loading">
         <div class="text-6xl animate-bounce mb-4">🚀</div>
-        <p class="text-blue-400 font-bold text-xl animate-pulse">Conectando ao Google...</p>
+        <p class="text-blue-400 font-bold text-xl animate-pulse">Carregando Placar...</p>
     </div>
 
     <button id="prevBtn" class="nav-btn" onclick="mudarSlideManual(-1)">&#10094;</button>
@@ -127,7 +127,7 @@
 
     <div id="slide2" class="slide">
         <header class="h-[10%] flex items-center justify-center">
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300 uppercase tracking-widest drop-shadow-lg">📅 1º Trimestre (Jan/Fev/Mar)</h1>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300 uppercase tracking-widest drop-shadow-lg">📅 2º Trimestre (Abr/Mai/Jun)</h1>
         </header>
         <div class="grid grid-cols-12 gap-6 h-[88%] w-full">
             <div class="col-span-7 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
@@ -193,12 +193,12 @@
 
     <div id="slide4" class="slide">
         <header class="h-[10%] flex items-center justify-center">
-            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400 uppercase tracking-widest drop-shadow-lg">🔥 Ranking Mensal (Março)</h1>
+            <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-400 uppercase tracking-widest drop-shadow-lg">🔥 Ranking Mensal (Abril)</h1>
         </header>
         
         <div class="grid grid-cols-12 gap-6 h-[88%] w-full px-4 pb-4">
             <div class="col-span-3 bg-slate-800/40 rounded-xl p-4 border border-slate-700 h-full flex flex-col shadow-lg">
-                <h3 class="text-lg font-bold text-slate-400 mb-4 text-center border-b border-slate-700 pb-2 uppercase tracking-wide">⏪ Top 3 (Fevereiro)</h3>
+                <h3 class="text-lg font-bold text-slate-400 mb-4 text-center border-b border-slate-700 pb-2 uppercase tracking-wide">⏪ Top 3 (Março)</h3>
                 <div id="top-mes-anterior" class="flex flex-col gap-4 flex-grow justify-center"></div>
             </div>
 
@@ -241,8 +241,6 @@
 
         async function carregarDados() {
             try {
-                // V27: CONEXÃO DIRETA (Sem uso de Proxy)
-                // Usamos o cache: 'no-store' para garantir que o navegador sempre baixe o novo.
                 const URL_DIRETA = GOOGLE_CSV + '&t=' + Date.now();
                 const response = await fetch(URL_DIRETA, { cache: 'no-store' });
                 
@@ -256,7 +254,8 @@
                 const rows = csvParaArray(text, ",");
                 
                 let vendasTrimestre = [];
-                let vendasMesAMes = { '1': 0, '2': 0, '3': 0 };
+                // ATUALIZADO: Meses do 2º Trimestre (Abril = 4, Maio = 5, Junho = 6)
+                let vendasMesAMes = { '4': 0, '5': 0, '6': 0 };
                 let corretores = {};
                 let equipes = {};
                 let totalTrimValorReal = 0;
@@ -288,7 +287,8 @@
                         if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                         corretores[corretor].vgv += vgv;
 
-                        if (mes >= 1 && mes <= 3) {
+                        // ATUALIZADO: Trimestre Geral (Abril a Junho)
+                        if (mes >= 4 && mes <= 6) {
                             vendasTrimestre.push({ corretor, vgv });
                             vendasMesAMes[mes] += vgv;
                             totalTrimVGV += vgv;
@@ -300,12 +300,14 @@
                             equipes[equipe].corretores[corretor] += vgv;
                         }
 
-                        if (mes === 3) {
+                        // ATUALIZADO: Vendas do Mês Atual (Abril = 4)
+                        if (mes === 4) {
                             if (!corretoresMesAtual[corretor]) corretoresMesAtual[corretor] = { nome: corretor, vgv: 0, foto: foto };
                             corretoresMesAtual[corretor].vgv += vgv;
                         }
 
-                        if (mes === 2) {
+                        // ATUALIZADO: Vendas do Mês Passado (Março = 3)
+                        if (mes === 3) {
                             if (!corretoresMesPassado[corretor]) corretoresMesPassado[corretor] = { nome: corretor, vgv: 0, foto: foto };
                             corretoresMesPassado[corretor].vgv += vgv;
                         }
@@ -392,7 +394,8 @@
             chartTrimestre.data.datasets[0].data = rankingTrim.map(c => c.v);
             chartTrimestre.update();
 
-            chartMes.data.datasets[0].data = [vendasMesAMes['1'], vendasMesAMes['2'], vendasMesAMes['3']];
+            // ATUALIZADO: Dados dos meses do 2º trimestre
+            chartMes.data.datasets[0].data = [vendasMesAMes['4'], vendasMesAMes['5'], vendasMesAMes['6']];
             chartMes.update();
 
             const eqRaphael = equipes["Time Raphael"] || { nome: "Time Raphael", vgv: 0, corretores: {} };
@@ -414,7 +417,6 @@
             updateTeamData(winner, chartEqA, 'eq1', '#10b981'); 
             updateTeamData(loser, chartEqB, 'eq2', '#3b82f6'); 
 
-            // --- PÁGINA 4 ---
             const rankMesAtual = Object.values(corretoresMesAtual).sort((a,b) => b.vgv - a.vgv);
             chartRankingMesAtual.data.labels = rankMesAtual.map(c => c.nome);
             chartRankingMesAtual.data.datasets[0].data = rankMesAtual.map(c => c.vgv);
@@ -425,7 +427,7 @@
             divTopAnt.innerHTML = '';
 
             if (rankMesPassado.length === 0) {
-                divTopAnt.innerHTML = '<p class="text-center text-slate-500 italic mt-10">Sem vendas em Fevereiro.</p>';
+                divTopAnt.innerHTML = '<p class="text-center text-slate-500 italic mt-10">Sem vendas em Março.</p>';
             } else {
                 rankMesPassado.forEach((c, i) => {
                     const pos = i + 1;
@@ -499,7 +501,8 @@
             type: 'bar', 
             plugins: [ChartDataLabels],
             data: { 
-                labels: ['Janeiro', 'Fevereiro', 'Março'], 
+                // ATUALIZADO: Rótulos do 2º Trimestre
+                labels: ['Abril', 'Maio', 'Junho'], 
                 datasets: [ { label: 'Realizado', data: [0, 0, 0], backgroundColor: '#6366f1', borderRadius: 4 } ] 
             }, 
             options: { 
@@ -547,5 +550,3 @@
     </script>
 </body>
 </html>
-
-
