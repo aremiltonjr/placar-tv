@@ -161,21 +161,20 @@
         .main-stage {
             flex: 1;
             display: grid;
-            grid-template-rows: 1fr auto;
+            grid-template-rows: auto 1fr;
             gap: 18px;
             min-height: 0;
         }
         .podium-row {
             display: grid;
             grid-template-columns: 1fr 1.1fr 1fr;
-            gap: 24px;
+            gap: 20px;
             align-items: stretch;
-            min-height: 0;
         }
         .podium-slot {
             background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
             border: 1px solid var(--line);
-            padding: 22px 22px 20px;
+            padding: 16px 20px 16px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -184,11 +183,11 @@
         }
         .podium-slot .rank-bg {
             position: absolute;
-            right: -10px;
-            top: -30px;
+            right: -14px;
+            top: -40px;
             font-family: var(--font-serif);
             font-weight: 800;
-            font-size: 280px;
+            font-size: 200px;
             line-height: 1;
             color: rgba(255,255,255,0.025);
             pointer-events: none;
@@ -201,8 +200,8 @@
                 linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
             box-shadow:
                 0 0 0 1px rgba(212,168,87,0.2),
-                0 20px 60px -20px rgba(212,168,87,0.25);
-            transform: translateY(-14px);
+                0 20px 50px -20px rgba(212,168,87,0.25);
+            transform: translateY(-8px);
         }
         .podium-slot.first .rank-bg { color: rgba(212,168,87,0.09); }
         .podium-slot.first::before {
@@ -212,18 +211,18 @@
 
         .slot-header {
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             position: relative;
             z-index: 2;
         }
         .slot-pos {
             font-family: var(--font-display);
-            font-size: 52px;
+            font-size: 40px;
             line-height: 0.8;
             letter-spacing: 0;
             color: var(--text-mute);
         }
-        .podium-slot.first .slot-pos { color: var(--gold); }
+        .podium-slot.first .slot-pos { color: var(--gold); font-size: 44px; }
         .podium-slot.second .slot-pos { color: var(--silver); }
         .podium-slot.third .slot-pos { color: var(--bronze); }
         .slot-medal {
@@ -235,33 +234,33 @@
         }
 
         .slot-body {
-            display: flex; align-items: center; gap: 18px;
+            display: flex; align-items: center; gap: 14px;
             position: relative; z-index: 2;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
         .slot-avatar {
-            width: 72px; height: 72px; flex-shrink: 0;
+            width: 56px; height: 56px; flex-shrink: 0;
             background-color: #222; background-size: cover; background-position: center;
             border: 1px solid var(--line-strong);
             display: flex; align-items: center; justify-content: center;
             font-family: var(--font-display);
-            font-size: 28px;
+            font-size: 22px;
             color: var(--text-dim);
         }
         .podium-slot.first .slot-avatar {
-            width: 88px; height: 88px;
+            width: 68px; height: 68px;
             border: 1px solid rgba(212,168,87,0.5);
             box-shadow: 0 0 0 3px rgba(212,168,87,0.1);
         }
         .slot-name {
             font-family: var(--font-display);
-            font-size: 28px;
+            font-size: 24px;
             line-height: 0.95;
             letter-spacing: 0.02em;
             color: var(--text);
             text-transform: uppercase;
         }
-        .podium-slot.first .slot-name { font-size: 34px; color: var(--gold-soft); }
+        .podium-slot.first .slot-name { font-size: 28px; color: var(--gold-soft); }
         .slot-team {
             font-family: var(--font-mono);
             font-size: 10px;
@@ -274,7 +273,7 @@
         .slot-value {
             position: relative; z-index: 2;
             border-top: 1px solid var(--line);
-            padding-top: 14px;
+            padding-top: 10px;
             margin-top: auto;
         }
         .slot-value-label {
@@ -287,16 +286,16 @@
         }
         .slot-value-amount {
             font-family: var(--font-mono);
-            font-size: 30px;
+            font-size: 24px;
             font-weight: 700;
             line-height: 1;
             letter-spacing: -0.01em;
             color: var(--text);
             font-variant-numeric: tabular-nums;
         }
-        .podium-slot.first .slot-value-amount { color: var(--gold); font-size: 38px; }
+        .podium-slot.first .slot-value-amount { color: var(--gold); font-size: 30px; }
         .slot-value-currency {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-dim);
             margin-right: 4px;
             font-weight: 500;
@@ -359,9 +358,10 @@
         .kpi {
             background: var(--bg-panel);
             border: 1px solid var(--line);
-            padding: 16px 18px;
+            padding: 14px 14px;
             position: relative;
             overflow: hidden;
+            min-width: 0;
         }
         .kpi::before {
             content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%;
@@ -372,30 +372,37 @@
         .kpi.red::before   { background: var(--lose); }
         .kpi-label {
             font-family: var(--font-mono);
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-dim);
-            letter-spacing: 0.18em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .kpi-value {
             font-family: var(--font-mono);
             font-weight: 700;
-            font-size: 22px;
+            font-size: 19px;
             line-height: 1;
             color: var(--text);
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.02em;
+            white-space: nowrap;
         }
         .kpi.gold .kpi-value { color: var(--gold); }
         .kpi.green .kpi-value { color: var(--win); }
         .kpi.red .kpi-value { color: var(--lose); }
         .kpi-trend {
             font-family: var(--font-mono);
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-mute);
             margin-top: 6px;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .panel {
@@ -436,62 +443,98 @@
         .duel-grid {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
             align-items: stretch;
             min-height: 0;
         }
         .team-card {
             background: var(--bg-panel);
             border: 1px solid var(--line);
-            padding: 22px 24px 18px;
+            padding: 20px 22px 16px;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
             min-height: 0;
         }
-        .team-card.winner {
-            border-color: rgba(212, 168, 87, 0.35);
-            box-shadow: 0 0 0 1px rgba(212,168,87,0.15), 0 20px 60px -20px rgba(212,168,87,0.2);
+        /* Distinções por posição */
+        .team-card.rank-1 {
+            border-color: rgba(212, 168, 87, 0.4);
+            background:
+                radial-gradient(ellipse at top right, rgba(212,168,87,0.08) 0%, transparent 60%),
+                var(--bg-panel);
+            box-shadow: 0 0 0 1px rgba(212,168,87,0.15), 0 20px 50px -20px rgba(212,168,87,0.2);
         }
-        .team-card.winner::before {
+        .team-card.rank-1::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: var(--gold);
         }
+        .team-card.rank-2 {
+            border-color: rgba(200, 200, 204, 0.2);
+        }
+        .team-card.rank-2::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--silver);
+            opacity: 0.6;
+        }
+        .team-card.rank-3 {
+            border-color: rgba(184, 115, 51, 0.25);
+        }
+        .team-card.rank-3::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--bronze);
+            opacity: 0.6;
+        }
+
         .team-header {
             display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 18px;
-            padding-bottom: 14px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
             border-bottom: 1px solid var(--line);
+            gap: 10px;
         }
         .team-name {
             font-family: var(--font-display);
-            font-size: 36px;
+            font-size: 28px;
             letter-spacing: 0.03em;
             line-height: 0.9;
             color: var(--text);
         }
-        .team-card.winner .team-name { color: var(--gold-soft); }
+        .team-card.rank-1 .team-name { color: var(--gold-soft); }
+        .team-card.rank-2 .team-name { color: var(--silver); }
+        .team-card.rank-3 .team-name { color: #d9955a; }
+
         .team-status {
             font-family: var(--font-mono);
-            font-size: 10px;
+            font-size: 9px;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--text-dim);
-            padding: 4px 10px;
+            padding: 4px 9px;
             border: 1px solid var(--line-strong);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
-        .team-card.winner .team-status {
+        .team-card.rank-1 .team-status {
             color: var(--gold);
             border-color: rgba(212,168,87,0.4);
         }
+        .team-card.rank-2 .team-status {
+            color: var(--silver);
+            border-color: rgba(200,200,204,0.3);
+        }
+        .team-card.rank-3 .team-status {
+            color: #d9955a;
+            border-color: rgba(184,115,51,0.4);
+        }
+
         .team-total {
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
         .team-total-label {
             font-family: var(--font-mono);
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-dim);
             letter-spacing: 0.18em;
             text-transform: uppercase;
@@ -500,42 +543,30 @@
         .team-total-value {
             font-family: var(--font-mono);
             font-weight: 700;
-            font-size: 44px;
+            font-size: 32px;
             line-height: 1;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.02em;
             color: var(--text);
         }
-        .team-card.winner .team-total-value { color: var(--gold); }
-        .team-chart { flex: 1; min-height: 0; position: relative; }
+        .team-card.rank-1 .team-total-value { color: var(--gold); }
+        .team-card.rank-2 .team-total-value { color: var(--silver); }
+        .team-card.rank-3 .team-total-value { color: #d9955a; }
 
-        .versus {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding: 0 8px;
-        }
-        .vs-line {
-            width: 1px; flex: 1;
-            background: linear-gradient(180deg, transparent, var(--line-strong), transparent);
-        }
-        .vs-mark {
-            font-family: var(--font-serif);
-            font-style: italic;
-            font-weight: 800;
-            font-size: 42px;
-            color: var(--text-mute);
-            padding: 14px 0;
-            letter-spacing: -0.04em;
-        }
-        .vs-diff {
+        /* Diferença pro líder (aparece no 2º e 3º) */
+        .team-gap {
             font-family: var(--font-mono);
             font-size: 10px;
-            color: var(--gold);
-            letter-spacing: 0.15em;
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            margin-top: 8px;
+            color: var(--text-mute);
+            margin-top: 4px;
+            letter-spacing: 0.05em;
         }
+        .team-gap .gap-val {
+            color: var(--lose);
+            font-weight: 700;
+        }
+
+        .team-chart { flex: 1; min-height: 0; position: relative; }
 
         /* ============ SLIDE 4 — MÊS ATUAL ============ */
         .month-grid {
@@ -884,7 +915,7 @@
                 </div>
                 <div class="kpi gold">
                     <div class="kpi-label">Meta</div>
-                    <div class="kpi-value" id="kpi-meta">R$ 42.500.000</div>
+                    <div class="kpi-value" id="kpi-meta">R$ 42,5M</div>
                     <div class="kpi-trend">Objetivo Trimestral</div>
                 </div>
                 <div class="kpi red" id="kpi-saldo-card">
@@ -922,7 +953,7 @@
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">03 / Confronto Direto</div>
-                <h1 class="slide-title">Duelo de <span class="accent">Equipes</span></h1>
+                <h1 class="slide-title">Disputa de <span class="accent">Equipes</span></h1>
             </div>
         </div>
         <div class="masthead-right">
@@ -933,39 +964,43 @@
     </header>
 
     <div class="duel-grid">
-        <div class="team-card winner" id="card-eq1">
+        <div class="team-card" id="card-eq1">
             <div class="team-header">
-                <div>
-                    <div class="team-name" id="nome-eq1">—</div>
-                </div>
-                <div class="team-status">Líder</div>
+                <div class="team-name" id="nome-eq1">—</div>
+                <div class="team-status" id="status-eq1">Líder</div>
             </div>
             <div class="team-total">
                 <div class="team-total-label">VGV Trimestre</div>
                 <div class="team-total-value" id="total-eq1">R$ 0</div>
+                <div class="team-gap" id="gap-eq1"></div>
             </div>
             <div class="team-chart"><canvas id="chartEquipeA"></canvas></div>
         </div>
 
-        <div class="versus">
-            <div class="vs-line"></div>
-            <div class="vs-mark">vs</div>
-            <div class="vs-diff" id="diff-label">Diferença</div>
-            <div class="vs-line"></div>
-        </div>
-
         <div class="team-card" id="card-eq2">
             <div class="team-header">
-                <div>
-                    <div class="team-name" id="nome-eq2">—</div>
-                </div>
-                <div class="team-status">Vice</div>
+                <div class="team-name" id="nome-eq2">—</div>
+                <div class="team-status" id="status-eq2">2º Lugar</div>
             </div>
             <div class="team-total">
                 <div class="team-total-label">VGV Trimestre</div>
                 <div class="team-total-value" id="total-eq2">R$ 0</div>
+                <div class="team-gap" id="gap-eq2"></div>
             </div>
             <div class="team-chart"><canvas id="chartEquipeB"></canvas></div>
+        </div>
+
+        <div class="team-card" id="card-eq3">
+            <div class="team-header">
+                <div class="team-name" id="nome-eq3">—</div>
+                <div class="team-status" id="status-eq3">3º Lugar</div>
+            </div>
+            <div class="team-total">
+                <div class="team-total-label">VGV Trimestre</div>
+                <div class="team-total-value" id="total-eq3">R$ 0</div>
+                <div class="team-gap" id="gap-eq3"></div>
+            </div>
+            <div class="team-chart"><canvas id="chartEquipeC"></canvas></div>
         </div>
     </div>
 </section>
@@ -1051,6 +1086,15 @@ const formatMoneyShort = (val) => {
 
 const formatMoney = (val) =>
     val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+
+// Formato adaptativo: números grandes viram abreviados pra caber nos KPIs
+const formatMoneyCompact = (val) => {
+    const abs = Math.abs(val);
+    const sign = val < 0 ? '-' : '';
+    if (abs >= 1e6) return sign + 'R$ ' + (abs/1e6).toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + 'M';
+    if (abs >= 1e3) return sign + 'R$ ' + (abs/1e3).toLocaleString('pt-BR', {maximumFractionDigits: 0}) + 'k';
+    return sign + 'R$ ' + abs.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+};
 
 const formatMoneyNoSymbol = (val) =>
     val.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
@@ -1215,7 +1259,14 @@ const chartEqA = new Chart(document.getElementById('chartEquipeA'), {
 const chartEqB = new Chart(document.getElementById('chartEquipeB'), {
     type: 'bar',
     plugins: [ChartDataLabels],
-    data: { labels: [], datasets: [{ data: [], backgroundColor: '#00d4ff', borderRadius: 0, barThickness: 14 }] },
+    data: { labels: [], datasets: [{ data: [], backgroundColor: '#c8c5bf', borderRadius: 0, barThickness: 14 }] },
+    options: commonBarOptions
+});
+
+const chartEqC = new Chart(document.getElementById('chartEquipeC'), {
+    type: 'bar',
+    plugins: [ChartDataLabels],
+    data: { labels: [], datasets: [{ data: [], backgroundColor: '#b87333', borderRadius: 0, barThickness: 14 }] },
     options: commonBarOptions
 });
 
@@ -1363,14 +1414,15 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
         trimByCorretor[v.corretor] += v.vgv;
     });
 
-    document.getElementById('kpi-vgv').innerText = formatMoney(totalTrimVGV);
-    document.getElementById('kpi-real').innerText = formatMoney(totalTrimValorReal);
+    document.getElementById('kpi-vgv').innerText = formatMoneyCompact(totalTrimVGV);
+    document.getElementById('kpi-real').innerText = formatMoneyCompact(totalTrimValorReal);
+    document.getElementById('kpi-meta').innerText = formatMoneyCompact(META_TRIMESTRAL);
 
     const saldo = totalTrimVGV - META_TRIMESTRAL;
     const elSaldo = document.getElementById('kpi-saldo');
     const elSaldoCard = document.getElementById('kpi-saldo-card');
     const elSaldoTrend = document.getElementById('kpi-saldo-trend');
-    elSaldo.innerText = (saldo >= 0 ? '+' : '') + formatMoney(saldo);
+    elSaldo.innerText = (saldo >= 0 ? '+' : '') + formatMoneyCompact(Math.abs(saldo));
 
     if (saldo >= 0) {
         elSaldoCard.classList.remove('red');
@@ -1396,22 +1448,43 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
     chartMes.data.datasets[0].data = [vendasMesAMes['4'], vendasMesAMes['5'], vendasMesAMes['6']];
     chartMes.update();
 
-    // ---------- Duelo ----------
+    // ---------- Disputa de 3 Equipes ----------
     const eqRaphael = equipes["Time Raphael"] || { nome: "Time Raphael", vgv: 0, corretores: {} };
     const eqFelipe  = equipes["Time Felipe"]  || { nome: "Time Felipe",  vgv: 0, corretores: {} };
-    const times = [eqRaphael, eqFelipe].sort((a,b) => b.vgv - a.vgv);
-    const winner = times[0], loser = times[1];
+    const eqMCMV    = equipes["MCMV"]         || { nome: "MCMV",         vgv: 0, corretores: {} };
 
-    const card1 = document.getElementById('card-eq1');
-    const card2 = document.getElementById('card-eq2');
-    card1.classList.add('winner');
-    card2.classList.remove('winner');
+    const times = [eqRaphael, eqFelipe, eqMCMV].sort((a,b) => b.vgv - a.vgv);
+    const lider = times[0];
 
-    updateTeamData(winner, chartEqA, 'eq1', '#d4a857');
-    updateTeamData(loser,  chartEqB, 'eq2', '#00d4ff');
+    // Cores dos charts por posição (dourado/prateado/bronze)
+    const coresTimes = ['#d4a857', '#c8c5bf', '#b87333'];
+    const statusTimes = ['Líder', '2º Lugar', '3º Lugar'];
+    const chartsTimes = [chartEqA, chartEqB, chartEqC];
 
-    const diff = winner.vgv - loser.vgv;
-    document.getElementById('diff-label').innerText = diff > 0 ? `+ R$ ${formatMoneyShort(diff)} de diferença` : 'Empate técnico';
+    times.forEach((eq, i) => {
+        const prefix = `eq${i+1}`;
+        const card = document.getElementById(`card-${prefix}`);
+
+        // Resetar classes de rank e aplicar a nova
+        card.classList.remove('rank-1', 'rank-2', 'rank-3');
+        card.classList.add(`rank-${i+1}`);
+
+        // Atualizar status
+        document.getElementById(`status-${prefix}`).innerText = statusTimes[i];
+
+        // Diferença pro líder (só pros não-líderes)
+        const gapEl = document.getElementById(`gap-${prefix}`);
+        if (i === 0) {
+            gapEl.innerHTML = eq.vgv > 0 ? '<span style="color: var(--gold)">★ No topo</span>' : '';
+        } else {
+            const diff = lider.vgv - eq.vgv;
+            gapEl.innerHTML = diff > 0
+                ? `<span class="gap-val">− R$ ${formatMoneyShort(diff)}</span> do líder`
+                : 'Empate';
+        }
+
+        updateTeamData(eq, chartsTimes[i], prefix, coresTimes[i]);
+    });
 
     // ---------- Mês Atual ----------
     const rankMesAtual = Object.values(corretoresMesAtual).sort((a,b) => b.vgv - a.vgv);
@@ -1467,7 +1540,7 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
 
 function updateTeamData(eq, chartObj, prefix, color) {
     document.getElementById(`nome-${prefix}`).innerText = eq.nome;
-    document.getElementById(`total-${prefix}`).innerText = formatMoney(eq.vgv);
+    document.getElementById(`total-${prefix}`).innerText = formatMoneyCompact(eq.vgv);
     const gerentes = ["Felipe de Jesus", "Raphael Lisboa"];
     const rankEq = Object.entries(eq.corretores)
         .filter(([nome, valor]) => !gerentes.includes(nome) && valor > 0)
