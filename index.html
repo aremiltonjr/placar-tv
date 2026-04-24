@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Placar 2026 · 2º Trimestre</title>
+    <title>Placar · Jarvis</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -775,7 +775,7 @@
 <body>
 
 <div id="loading">
-    <div class="loading-logo">Placar · 2026</div>
+    <div class="loading-logo" id="loading-title">Placar · 2026</div>
     <div class="loading-bar"></div>
     <div class="loading-text">Carregando dados</div>
 </div>
@@ -791,7 +791,7 @@
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">01 / Ranking Anual</div>
-                <h1 class="slide-title">Classificação <span class="accent">2026</span></h1>
+                <h1 class="slide-title">Classificação <span class="accent" id="title-ano">2026</span></h1>
             </div>
         </div>
         <div class="masthead-right">
@@ -889,7 +889,7 @@
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">02 / Performance Trimestral</div>
-                <h1 class="slide-title">2º Trimestre <span class="accent">· Abr / Mai / Jun</span></h1>
+                <h1 class="slide-title"><span id="title-trim">2º Trimestre</span> <span class="accent" id="title-trim-meses">· Abr / Mai / Jun</span></h1>
             </div>
         </div>
         <div class="masthead-right">
@@ -1022,7 +1022,7 @@
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">04 / Disputa do Mês</div>
-                <h1 class="slide-title">Ranking de <span class="accent">Abril</span></h1>
+                <h1 class="slide-title">Ranking de <span class="accent" id="title-mes-atual">Abril</span></h1>
             </div>
         </div>
         <div class="masthead-right">
@@ -1035,7 +1035,7 @@
     <div class="month-grid">
         <div class="prev-podium">
             <div class="panel-head">
-                <div class="panel-title">Top 5 de Março</div>
+                <div class="panel-title" id="title-mes-anterior">Top 5 de Março</div>
                 <div class="panel-meta">Mês Anterior</div>
             </div>
             <div class="prev-list" id="top-mes-anterior"></div>
@@ -1065,6 +1065,49 @@
 const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?output=csv';
 const META_TRIMESTRAL = 42500000;
 const SLIDE_DURATION = 30000;
+
+// ==================== PERÍODO ATUAL (dinâmico) ====================
+// Calcula ano, mês e trimestre a partir da data do computador.
+// Toda a filtragem e títulos usam estas variáveis — não precisa mexer no código ao virar mês/trimestre/ano.
+const HOJE = new Date();
+const ANO_ATUAL = HOJE.getFullYear();
+const MES_ATUAL = HOJE.getMonth() + 1; // 1-12
+const MES_ANTERIOR = MES_ATUAL === 1 ? 12 : MES_ATUAL - 1;
+const ANO_MES_ANTERIOR = MES_ATUAL === 1 ? ANO_ATUAL - 1 : ANO_ATUAL;
+const TRIMESTRE = Math.ceil(MES_ATUAL / 3); // 1-4
+const MES_INICIO_TRIM = (TRIMESTRE - 1) * 3 + 1;
+const MES_FIM_TRIM = TRIMESTRE * 3;
+const MESES_TRIMESTRE = [MES_INICIO_TRIM, MES_INICIO_TRIM + 1, MES_INICIO_TRIM + 2];
+
+const NOMES_MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const NOMES_MES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const NOMES_TRIM = ['', '1º', '2º', '3º', '4º'];
+
+// Aplica todos os títulos dinâmicos da tela com base no período atual
+function aplicarTitulosPeriodo() {
+    // Slide 1 — Ano
+    document.getElementById('title-ano').innerText = ANO_ATUAL;
+
+    // Slide 2 — Trimestre
+    const abrevs = MESES_TRIMESTRE.map(m => NOMES_MES_ABREV[m-1]).join(' / ');
+    document.getElementById('title-trim').innerText = `${NOMES_TRIM[TRIMESTRE]} Trimestre`;
+    document.getElementById('title-trim-meses').innerText = `· ${abrevs}`;
+
+    // Slide 4 — Mês atual e anterior
+    document.getElementById('title-mes-atual').innerText = NOMES_MES[MES_ATUAL-1];
+    document.getElementById('title-mes-anterior').innerText = `Top 5 de ${NOMES_MES[MES_ANTERIOR-1]}`;
+
+    // Aba do navegador e loading
+    document.title = `Placar · Jarvis · ${ANO_ATUAL}`;
+    const loadingTitle = document.getElementById('loading-title');
+    if (loadingTitle) loadingTitle.innerText = `Placar · ${ANO_ATUAL}`;
+
+    // Rótulos do gráfico de evolução mensal (aplicados depois que o chart existir)
+    if (typeof chartMes !== 'undefined' && chartMes) {
+        chartMes.data.labels = MESES_TRIMESTRE.map(m => NOMES_MES[m-1].toUpperCase());
+        chartMes.update();
+    }
+}
 
 // ==================== UTILS ====================
 function csvParaArray(strData, strDelimiter) {
@@ -1306,7 +1349,9 @@ async function carregarDados() {
         const rows = csvParaArray(text, ",");
 
         let vendasTrimestre = [];
-        let vendasMesAMes = { '4': 0, '5': 0, '6': 0 };
+        // Inicializa as 3 chaves do trimestre atual dinamicamente
+        let vendasMesAMes = {};
+        MESES_TRIMESTRE.forEach(m => { vendasMesAMes[m] = 0; });
         let corretores = {};
         let equipes = {};
         let totalTrimValorReal = 0;
@@ -1334,11 +1379,13 @@ async function carregarDados() {
 
             if (corretor === "Lauro Braga") continue;
 
-            if (ano === 2026) {
+            // Ano atual (acumula ranking anual completo)
+            if (ano === ANO_ATUAL) {
                 if (!corretores[corretor]) corretores[corretor] = { nome: corretor, vgv: 0, foto: foto, equipe: equipe };
                 corretores[corretor].vgv += vgv;
 
-                if (mes >= 4 && mes <= 6) {
+                // Trimestre atual
+                if (mes >= MES_INICIO_TRIM && mes <= MES_FIM_TRIM) {
                     vendasTrimestre.push({ corretor, vgv });
                     vendasMesAMes[mes] += vgv;
                     totalTrimVGV += vgv;
@@ -1350,16 +1397,18 @@ async function carregarDados() {
                     equipes[equipe].corretores[corretor] += vgv;
                 }
 
-                if (mes === 4) {
+                // Mês atual
+                if (mes === MES_ATUAL) {
                     if (!corretoresMesAtual[corretor]) corretoresMesAtual[corretor] = { nome: corretor, vgv: 0, foto: foto };
                     corretoresMesAtual[corretor].vgv += vgv;
                     ultimasVendas.push({ corretor, vgv, data: strData });
                 }
+            }
 
-                if (mes === 3) {
-                    if (!corretoresMesPassado[corretor]) corretoresMesPassado[corretor] = { nome: corretor, vgv: 0, foto: foto };
-                    corretoresMesPassado[corretor].vgv += vgv;
-                }
+            // Mês anterior (pode ser do ano anterior se MES_ATUAL for janeiro)
+            if (ano === ANO_MES_ANTERIOR && mes === MES_ANTERIOR) {
+                if (!corretoresMesPassado[corretor]) corretoresMesPassado[corretor] = { nome: corretor, vgv: 0, foto: foto };
+                corretoresMesPassado[corretor].vgv += vgv;
             }
         }
 
@@ -1454,7 +1503,7 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
     chartTrimestre.data.datasets[0].data = rankingTrim.map(c => c.v);
     chartTrimestre.update();
 
-    chartMes.data.datasets[0].data = [vendasMesAMes['4'], vendasMesAMes['5'], vendasMesAMes['6']];
+    chartMes.data.datasets[0].data = MESES_TRIMESTRE.map(m => vendasMesAMes[m] || 0);
     chartMes.update();
 
     // ---------- Disputa de 3 Equipes ----------
@@ -1611,8 +1660,18 @@ slideInterval = setInterval(proximoSlide, SLIDE_DURATION);
 startProgress();
 
 // ==================== BOOT ====================
+aplicarTitulosPeriodo(); // aplica títulos dinâmicos (ano, mês, trimestre)
 carregarDados();
 setInterval(carregarDados, 120000);
+
+// Detecta virada de dia: se mudou o mês/trimestre/ano, recarrega a página pra recalcular tudo
+setInterval(() => {
+    const agora = new Date();
+    if (agora.getFullYear() !== ANO_ATUAL || (agora.getMonth() + 1) !== MES_ATUAL) {
+        console.log('Virada de período detectada — recarregando...');
+        location.reload();
+    }
+}, 60000); // verifica a cada 1 minuto
 </script>
 </body>
 </html>
