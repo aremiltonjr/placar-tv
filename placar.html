@@ -32,6 +32,8 @@
             --silver:       #c8c8cc;
             --bronze:       #b87333;
 
+            --jarvis:       #E94E1A;
+
             --accent:       #00d4ff;
             --accent-warm:  #ff7a45;
             --win:          #7dd87d;
@@ -93,7 +95,7 @@
             content: ''; position: absolute; bottom: -1px; left: 0;
             width: 80px; height: 2px; background: var(--gold);
         }
-        .masthead-left { display: flex; align-items: baseline; gap: 18px; }
+        .masthead-left { display: flex; align-items: center; gap: 18px; }
         .brand-mark {
             font-family: var(--font-serif);
             font-weight: 800;
@@ -102,6 +104,11 @@
             letter-spacing: 0.15em;
             color: var(--gold);
             text-transform: uppercase;
+        }
+        .brand-logo {
+            height: 36px;
+            width: auto;
+            display: block;
         }
         .brand-sep {
             width: 1px; height: 18px; background: var(--line-strong);
@@ -583,13 +590,13 @@
             display: flex; flex-direction: column;
             min-height: 0;
         }
-        .prev-list { display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center; }
+        .prev-list { display: flex; flex-direction: column; gap: 9px; flex: 1; justify-content: center; }
         .prev-item {
             display: grid;
             grid-template-columns: auto auto 1fr;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
-            padding: 14px 14px;
+            padding: 10px 12px;
             background: var(--bg-panel-2);
             border: 1px solid var(--line);
             position: relative;
@@ -597,19 +604,20 @@
         .prev-item.p1 { border-color: rgba(212,168,87,0.3); }
         .prev-item.p2 { border-color: rgba(200,200,204,0.18); }
         .prev-item.p3 { border-color: rgba(184,115,51,0.22); }
+        .prev-item.p4, .prev-item.p5 { opacity: 0.85; }
         .prev-pos {
             font-family: var(--font-display);
-            font-size: 32px;
+            font-size: 26px;
             line-height: 0.8;
             color: var(--text-mute);
-            width: 32px;
+            width: 28px;
             text-align: center;
         }
-        .prev-item.p1 .prev-pos { color: var(--gold); }
+        .prev-item.p1 .prev-pos { color: var(--gold); font-size: 30px; }
         .prev-item.p2 .prev-pos { color: var(--silver); }
         .prev-item.p3 .prev-pos { color: var(--bronze); }
         .prev-avatar {
-            width: 44px; height: 44px;
+            width: 38px; height: 38px;
             background-size: cover; background-position: center;
             background-color: #222;
             border: 1px solid var(--line-strong);
@@ -617,7 +625,7 @@
         .prev-info { min-width: 0; }
         .prev-name {
             font-family: var(--font-display);
-            font-size: 18px;
+            font-size: 16px;
             letter-spacing: 0.04em;
             line-height: 1;
             color: var(--text);
@@ -626,11 +634,12 @@
         }
         .prev-value {
             font-family: var(--font-mono);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--gold);
             font-variant-numeric: tabular-nums;
         }
+        .prev-item.p4 .prev-value, .prev-item.p5 .prev-value { color: var(--text-dim); }
         .prev-empty {
             font-family: var(--font-serif);
             font-style: italic;
@@ -670,7 +679,7 @@
         }
         .slide-progress-fill {
             height: 100%;
-            background: var(--gold);
+            background: var(--jarvis);
             width: 0%;
             transition: width 0.1s linear;
         }
@@ -688,8 +697,8 @@
             font-size: 11px;
         }
         .ticker-label {
-            background: var(--gold);
-            color: #000;
+            background: var(--jarvis);
+            color: #fff;
             padding: 6px 12px;
             font-weight: 700;
             letter-spacing: 0.15em;
@@ -746,7 +755,7 @@
         }
         .loading-bar::after {
             content: ''; position: absolute; top: 0; bottom: 0; width: 40%;
-            background: var(--gold);
+            background: var(--jarvis);
             animation: loadingSweep 1.4s ease-in-out infinite;
         }
         @keyframes loadingSweep {
@@ -778,7 +787,7 @@
 <section id="slide1" class="slide active">
     <header class="masthead">
         <div class="masthead-left">
-            <div class="brand-mark">Placar da Casa</div>
+            <img src="logo.png" alt="Jarvis Inteligência Imobiliária" class="brand-logo">
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">01 / Ranking Anual</div>
@@ -876,7 +885,7 @@
 <section id="slide2" class="slide">
     <header class="masthead">
         <div class="masthead-left">
-            <div class="brand-mark">Placar da Casa</div>
+            <img src="logo.png" alt="Jarvis Inteligência Imobiliária" class="brand-logo">
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">02 / Performance Trimestral</div>
@@ -949,7 +958,7 @@
 <section id="slide3" class="slide">
     <header class="masthead">
         <div class="masthead-left">
-            <div class="brand-mark">Placar da Casa</div>
+            <img src="logo.png" alt="Jarvis Inteligência Imobiliária" class="brand-logo">
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">03 / Confronto Direto</div>
@@ -1009,7 +1018,7 @@
 <section id="slide4" class="slide">
     <header class="masthead">
         <div class="masthead-left">
-            <div class="brand-mark">Placar da Casa</div>
+            <img src="logo.png" alt="Jarvis Inteligência Imobiliária" class="brand-logo">
             <div class="brand-sep"></div>
             <div>
                 <div class="slide-eyebrow">04 / Disputa do Mês</div>
@@ -1026,7 +1035,7 @@
     <div class="month-grid">
         <div class="prev-podium">
             <div class="panel-head">
-                <div class="panel-title">Pódio de Março</div>
+                <div class="panel-title">Top 5 de Março</div>
                 <div class="panel-meta">Mês Anterior</div>
             </div>
             <div class="prev-list" id="top-mes-anterior"></div>
@@ -1047,7 +1056,7 @@
 
 <!-- Ticker -->
 <div class="ticker">
-    <div class="ticker-label">Flash · Mercado</div>
+    <div class="ticker-label">Radar Jarvis</div>
     <div class="ticker-content" id="tickerContent"></div>
 </div>
 
@@ -1493,7 +1502,7 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
     chartRankingMesAtual.update();
 
     // ---------- Pódio Mês Passado ----------
-    const rankMesPassado = Object.values(corretoresMesPassado).sort((a,b) => b.vgv - a.vgv).slice(0, 3);
+    const rankMesPassado = Object.values(corretoresMesPassado).sort((a,b) => b.vgv - a.vgv).slice(0, 5);
     const divTopAnt = document.getElementById('top-mes-anterior');
     divTopAnt.innerHTML = '';
     if (rankMesPassado.length === 0) {
