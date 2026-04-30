@@ -1579,12 +1579,8 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
     // ---------- Ticker ----------
     const tickerEl = document.getElementById('tickerContent');
     const itens = [];
-    // Top 5 anual
-    rankingAnual.slice(0, 8).forEach((c, i) => {
-        itens.push(`<div class="ticker-item"><span class="sym">${String(i+1).padStart(2,'0')}</span> ${c.nome.toUpperCase()} <span class="val">R$ ${formatMoneyShort(c.vgv)}</span></div>`);
-    });
     // Últimas vendas do mês
-    ultimasVendas.slice(-6).reverse().forEach(v => {
+    ultimasVendas.slice(-10).reverse().forEach(v => {
         itens.push(`<div class="ticker-item"><span class="sym">▲</span> ${v.corretor.toUpperCase()} <span class="val">R$ ${formatMoneyShort(v.vgv)}</span> · ${v.data}</div>`);
     });
     // KPIs
