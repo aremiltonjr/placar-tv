@@ -1509,9 +1509,9 @@ function atualizarInterface(corretores, equipes, vendasTrimestre, vendasMesAMes,
     // ---------- Disputa de 3 Equipes ----------
     const eqRaphael = equipes["Time Raphael"] || { nome: "Time Raphael", vgv: 0, corretores: {} };
     const eqFelipe  = equipes["Time Felipe"]  || { nome: "Time Felipe",  vgv: 0, corretores: {} };
-    const eqMCMV    = equipes["MCMV"]         || { nome: "MCMV",         vgv: 0, corretores: {} };
+    const eqStartHome    = equipes["Start Home"]         || { nome: "Start Home",         vgv: 0, corretores: {} };
 
-    const times = [eqRaphael, eqFelipe, eqMCMV].sort((a,b) => b.vgv - a.vgv);
+    const times = [eqRaphael, eqFelipe, eqStartHome].sort((a,b) => b.vgv - a.vgv);
     const lider = times[0];
 
     // Cores dos charts por posição (dourado/prateado/bronze)
