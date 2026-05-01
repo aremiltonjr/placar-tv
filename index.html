@@ -1377,7 +1377,16 @@ async function carregarDados() {
             const mes = parseInt(dataParts[1]);
             const ano = parseInt(dataParts[2]);
 
-            if (corretor === "Lauro Braga") continue;
+            // Lauro Braga (diretor): vendas contam nos totais, mas ele não aparece
+            // em rankings, pódios, equipes ou ticker (last sales).
+            if (corretor === "Lauro Braga") {
+                if (ano === ANO_ATUAL && mes >= MES_INICIO_TRIM && mes <= MES_FIM_TRIM) {
+                    vendasMesAMes[mes] += vgv;
+                    totalTrimVGV += vgv;
+                    totalTrimValorReal += valorReal;
+                }
+                continue;
+            }
 
             // Ano atual (acumula ranking anual completo)
             if (ano === ANO_ATUAL) {
