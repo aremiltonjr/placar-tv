@@ -770,6 +770,25 @@
             margin-top: 14px;
             text-transform: uppercase;
         }
+        /* ============ SLIDE 5 — OPORTUNIDADES ============ */
+        .accent-blue { color: var(--accent); }
+
+        .opp-layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 0;
+        }
+        .opp-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+        .opp-kpi::before { background: var(--accent) !important; }
+        .opp-kpi .kpi-value { color: var(--accent); }
+        .opp-kpi.neutral .kpi-value { color: var(--text); font-size: 15px; }
+        .opp-panel { flex: 1; min-height: 0; }
     </style>
 </head>
 <body>
@@ -797,7 +816,7 @@
         <div class="masthead-right">
             <div class="live-pill"><span class="live-dot"></span> AO VIVO</div>
             <div class="clock" id="clock1">--:--</div>
-            <div class="slide-counter"><span class="current">01</span> / 04</div>
+            <div class="slide-counter"><span class="current">01</span> / 05</div>
         </div>
     </header>
 
@@ -895,7 +914,7 @@
         <div class="masthead-right">
             <div class="live-pill"><span class="live-dot"></span> AO VIVO</div>
             <div class="clock" id="clock2">--:--</div>
-            <div class="slide-counter"><span class="current">02</span> / 04</div>
+            <div class="slide-counter"><span class="current">02</span> / 05</div>
         </div>
     </header>
 
@@ -968,7 +987,7 @@
         <div class="masthead-right">
             <div class="live-pill"><span class="live-dot"></span> AO VIVO</div>
             <div class="clock" id="clock3">--:--</div>
-            <div class="slide-counter"><span class="current">03</span> / 04</div>
+            <div class="slide-counter"><span class="current">03</span> / 05</div>
         </div>
     </header>
 
@@ -1028,7 +1047,7 @@
         <div class="masthead-right">
             <div class="live-pill"><span class="live-dot"></span> AO VIVO</div>
             <div class="clock" id="clock4">--:--</div>
-            <div class="slide-counter"><span class="current">04</span> / 04</div>
+            <div class="slide-counter"><span class="current">04</span> / 05</div>
         </div>
     </header>
 
@@ -1051,6 +1070,53 @@
     </div>
 </section>
 
+<!-- ============ SLIDE 5 · FUNIL DE OPORTUNIDADES ============ -->
+<section id="slide5" class="slide">
+    <header class="masthead">
+        <div class="masthead-left">
+            <img src="logo.png" alt="Jarvis Inteligência Imobiliária" class="brand-logo">
+            <div class="brand-sep"></div>
+            <div>
+                <div class="slide-eyebrow">05 / Funil Comercial</div>
+                <h1 class="slide-title">Radar de <span class="accent-blue">Oportunidades</span></h1>
+            </div>
+        </div>
+        <div class="masthead-right">
+            <div class="live-pill"><span class="live-dot"></span> AO VIVO</div>
+            <div class="clock" id="clock5">--:--</div>
+            <div class="slide-counter"><span class="current">05</span> / 05</div>
+        </div>
+    </header>
+
+    <div class="opp-layout">
+        <div class="opp-kpi-row">
+            <div class="kpi opp-kpi">
+                <div class="kpi-label">Total de Oportunidades</div>
+                <div class="kpi-value" id="opp-total">—</div>
+                <div class="kpi-trend">Todas as entradas</div>
+            </div>
+            <div class="kpi opp-kpi">
+                <div class="kpi-label">Corretores com Oportunidades</div>
+                <div class="kpi-value" id="opp-corretores">—</div>
+                <div class="kpi-trend">Responsáveis ativos</div>
+            </div>
+            <div class="kpi opp-kpi neutral">
+                <div class="kpi-label">Principal Origem</div>
+                <div class="kpi-value" id="opp-top-origem">—</div>
+                <div class="kpi-trend" id="opp-top-origem-count">—</div>
+            </div>
+        </div>
+
+        <div class="panel opp-panel">
+            <div class="panel-head">
+                <div class="panel-title">Ranking por Responsável</div>
+                <div class="panel-meta">Contagem de Oportunidades · Todas as Origens</div>
+            </div>
+            <div class="panel-chart" style="flex:1"><canvas id="chartOportunidades"></canvas></div>
+        </div>
+    </div>
+</section>
+
 <!-- Progress bar base -->
 <div class="slide-progress"><div class="slide-progress-fill" id="progressFill"></div></div>
 
@@ -1063,6 +1129,7 @@
 <script>
 // ==================== CONFIG ====================
 const GOOGLE_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9rJ-bnHX7Pl-FiVgqeEptR8NX_F7kqu80Mpny5jCMIKUt8vYi7Zb4yYrIsIbPnz071ZgDSdfTy1K/pub?output=csv';
+const GOOGLE_CSV_OPP = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHibm5cax-d15oh-6JBlV4m9LNVwhQKfwsDJgCe3fjmbLhi8i7gpEurUP7Vh6wRqw2hNGV9Y2yI42j/pub?output=csv';
 const META_TRIMESTRAL = 42500000;
 const SLIDE_DURATION = 30000;
 
@@ -1337,6 +1404,61 @@ const chartRankingMesAtual = new Chart(document.getElementById('chartRankingMesA
     options: commonBarOptions
 });
 
+const chartOportunidades = new Chart(document.getElementById('chartOportunidades'), {
+    type: 'bar',
+    plugins: [ChartDataLabels],
+    data: {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: (ctx) => {
+                const colors = ['#00d4ff','#00c0e8','#00acd1','#0098ba','#0084a3','#00708c'];
+                return colors[Math.min(ctx.dataIndex, colors.length - 1)];
+            },
+            borderRadius: 0,
+            barThickness: 18
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        maintainAspectRatio: false,
+        responsive: true,
+        layout: { padding: { right: 70, left: 4, top: 4, bottom: 4 } },
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            datalabels: {
+                color: '#f5f3ee',
+                anchor: 'end',
+                align: 'end',
+                offset: 6,
+                clamp: true,
+                formatter: (val) => val + ' opp',
+                font: { family: "'JetBrains Mono', monospace", weight: '700', size: 13 }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false },
+                border: { display: false },
+                ticks: { display: false }
+            },
+            y: {
+                grid: { display: false },
+                border: { display: false },
+                ticks: {
+                    color: '#c8c5bf',
+                    font: { family: "'Inter Tight', sans-serif", size: 13, weight: '600' },
+                    crossAlign: 'far',
+                    padding: 6
+                }
+            }
+        },
+        animation: { duration: 900, easing: 'easeOutCubic' }
+    }
+});
+
 // ==================== DATA LOAD ====================
 async function carregarDados() {
     try {
@@ -1377,9 +1499,11 @@ async function carregarDados() {
             const mes = parseInt(dataParts[1]);
             const ano = parseInt(dataParts[2]);
 
-            // Lauro Braga (diretor): vendas contam nos totais, mas ele não aparece
-            // em rankings, pódios, equipes ou ticker (last sales).
-            if (corretor === "Lauro Braga") {
+            // Corretores ocultos: VGV conta nos totais/KPIs, mas o nome não aparece
+            // em rankings, pódios, equipes ou ticker.
+            // Para adicionar alguém no futuro, basta incluir o nome nesta lista.
+            const OCULTOS_DOS_RANKINGS = ["Lauro Braga", "Cátia Caires"];
+            if (OCULTOS_DOS_RANKINGS.includes(corretor)) {
                 if (ano === ANO_ATUAL && mes >= MES_INICIO_TRIM && mes <= MES_FIM_TRIM) {
                     vendasMesAMes[mes] += vgv;
                     totalTrimVGV += vgv;
@@ -1616,6 +1740,57 @@ function updateTeamData(eq, chartObj, prefix, color) {
     chartObj.update();
 }
 
+// ==================== OPORTUNIDADES ====================
+async function carregarOportunidades() {
+    try {
+        const response = await fetch(GOOGLE_CSV_OPP + '&t=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const text = await response.text();
+        if (!text || text.includes('<!DOCTYPE html>')) throw new Error("Planilha de Oportunidades retornou HTML");
+
+        const rows = csvParaArray(text, ",");
+
+        // Colunas: [0] ID Oportunidade | [1] ID Pessoa | [2] ID Responsavel
+        //          [3] Responsavel (nome) | [4] Data cadastro | [5] Origem | [6] Status | [7] Etapa
+        const EXCLUIDOS_OPP = ["Lauro Braga"];
+        const countByCorretor = {};
+        const countByOrigem = {};
+
+        for (let i = 1; i < rows.length; i++) {
+            const col = rows[i];
+            if (!col || col.length < 4) continue;
+
+            const responsavel = col[3] ? col[3].trim() : '';
+            const origem      = col[5] ? col[5].trim() : 'Não informada';
+
+            if (!responsavel || EXCLUIDOS_OPP.includes(responsavel)) continue;
+
+            countByCorretor[responsavel] = (countByCorretor[responsavel] || 0) + 1;
+            countByOrigem[origem]        = (countByOrigem[origem]        || 0) + 1;
+        }
+
+        const total           = Object.values(countByCorretor).reduce((a, b) => a + b, 0);
+        const corretoresAtivos = Object.keys(countByCorretor).length;
+        const topOrigem        = Object.entries(countByOrigem).sort((a, b) => b[1] - a[1])[0];
+
+        document.getElementById('opp-total').innerText      = total.toLocaleString('pt-BR');
+        document.getElementById('opp-corretores').innerText = corretoresAtivos;
+        document.getElementById('opp-top-origem').innerText = topOrigem ? topOrigem[0] : '—';
+        document.getElementById('opp-top-origem-count').innerText = topOrigem ? topOrigem[1] + ' entradas' : '';
+
+        const ranking = Object.entries(countByCorretor)
+            .map(([n, v]) => ({ n, v }))
+            .sort((a, b) => b.v - a.v);
+
+        chartOportunidades.data.labels = ranking.map((c, i) => `${String(i + 1).padStart(2, '0')}  ${shortName(c.n)}`);
+        chartOportunidades.data.datasets[0].data = ranking.map(c => c.v);
+        chartOportunidades.update();
+
+    } catch (error) {
+        console.error('Erro ao carregar oportunidades:', error);
+    }
+}
+
 // ==================== NAV ====================
 let currentSlide = 1;
 let slideInterval;
@@ -1668,6 +1843,8 @@ startProgress();
 aplicarTitulosPeriodo(); // aplica títulos dinâmicos (ano, mês, trimestre)
 carregarDados();
 setInterval(carregarDados, 120000);
+carregarOportunidades();
+setInterval(carregarOportunidades, 120000);
 
 // Detecta virada de dia: se mudou o mês/trimestre/ano, recarrega a página pra recalcular tudo
 setInterval(() => {
