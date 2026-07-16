@@ -788,7 +788,86 @@
         .opp-kpi::before { background: var(--accent) !important; }
         .opp-kpi .kpi-value { color: var(--accent); }
         .opp-kpi.neutral .kpi-value { color: var(--text); font-size: 15px; }
-        .opp-panel { flex: 1; min-height: 0; }
+
+        .opp-main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            min-height: 0;
+        }
+        .opp-panel { min-height: 0; }
+        .opp-right {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            min-height: 0;
+        }
+        .opp-team-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .opp-team-card.rank-1 {
+            border-color: rgba(212, 168, 87, 0.4);
+            background: radial-gradient(ellipse at top right, rgba(212,168,87,0.08) 0%, transparent 60%), var(--bg-panel);
+        }
+        .opp-team-card.rank-1::before,
+        .opp-team-card.rank-2::before,
+        .opp-team-card.rank-3::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        }
+        .opp-team-card.rank-1::before { background: var(--gold); }
+        .opp-team-card.rank-2::before { background: var(--silver); opacity: 0.6; }
+        .opp-team-card.rank-3::before { background: var(--bronze); opacity: 0.6; }
+        .opp-team-pos {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-mute);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .opp-team-name {
+            font-family: var(--font-display);
+            font-size: 24px;
+            letter-spacing: 0.03em;
+            line-height: 0.9;
+            color: var(--text);
+            margin-bottom: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .opp-team-card.rank-1 .opp-team-name { color: var(--gold-soft); }
+        .opp-team-card.rank-2 .opp-team-name { color: var(--silver); }
+        .opp-team-card.rank-3 .opp-team-name { color: #d9955a; }
+        .opp-team-count {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 42px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+        .opp-team-card.rank-1 .opp-team-count { color: var(--gold); }
+        .opp-team-card.rank-2 .opp-team-count { color: var(--silver); }
+        .opp-team-card.rank-3 .opp-team-count { color: #d9955a; }
+        .opp-team-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-mute);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
     </style>
 </head>
 <body>
@@ -1107,12 +1186,17 @@
             </div>
         </div>
 
-        <div class="panel opp-panel">
-            <div class="panel-head">
-                <div class="panel-title">Ranking por Responsável</div>
-                <div class="panel-meta">Contagem de Oportunidades · Todas as Origens</div>
+        <div class="opp-main-grid">
+            <div class="panel opp-panel">
+                <div class="panel-head">
+                    <div class="panel-title">Ranking por Responsável</div>
+                    <div class="panel-meta">Contagem de Oportunidades · Todas as Origens</div>
+                </div>
+                <div class="panel-chart" style="flex:1"><canvas id="chartOportunidades"></canvas></div>
             </div>
-            <div class="panel-chart" style="flex:1"><canvas id="chartOportunidades"></canvas></div>
+            <div class="opp-right" id="opp-equipes">
+                <!-- preenchido dinamicamente -->
+            </div>
         </div>
     </div>
 </section>
@@ -1433,7 +1517,7 @@ const chartOportunidades = new Chart(document.getElementById('chartOportunidades
                 align: 'end',
                 offset: 6,
                 clamp: true,
-                formatter: (val) => val + ' opp',
+                formatter: (val) => val,
                 font: { family: "'JetBrains Mono', monospace", weight: '700', size: 13 }
             }
         },
@@ -1751,10 +1835,11 @@ async function carregarOportunidades() {
         const rows = csvParaArray(text, ",");
 
         // Colunas: [0] ID Oportunidade | [1] ID Pessoa | [2] ID Responsavel
-        //          [3] Responsavel (nome) | [4] Data cadastro | [5] Origem | [6] Status | [7] Etapa
-        const EXCLUIDOS_OPP = ["Lauro Braga"];
+        //          [3] Responsavel (nome) | [4] Data cadastro | [5] Origem | [6] Status | [7] Etapa | [8] Equipe
+        const EXCLUIDOS_OPP = ["Lauro Braga", "Cátia Caires"];
         const countByCorretor = {};
-        const countByOrigem = {};
+        const countByOrigem   = {};
+        const countByEquipe   = {};
 
         for (let i = 1; i < rows.length; i++) {
             const col = rows[i];
@@ -1762,14 +1847,16 @@ async function carregarOportunidades() {
 
             const responsavel = col[3] ? col[3].trim() : '';
             const origem      = col[5] ? col[5].trim() : 'Não informada';
+            const equipe      = col[8] ? col[8].trim() : '';
 
             if (!responsavel || EXCLUIDOS_OPP.includes(responsavel)) continue;
 
             countByCorretor[responsavel] = (countByCorretor[responsavel] || 0) + 1;
             countByOrigem[origem]        = (countByOrigem[origem]        || 0) + 1;
+            if (equipe) countByEquipe[equipe] = (countByEquipe[equipe] || 0) + 1;
         }
 
-        const total           = Object.values(countByCorretor).reduce((a, b) => a + b, 0);
+        const total            = Object.values(countByCorretor).reduce((a, b) => a + b, 0);
         const corretoresAtivos = Object.keys(countByCorretor).length;
         const topOrigem        = Object.entries(countByOrigem).sort((a, b) => b[1] - a[1])[0];
 
@@ -1785,6 +1872,25 @@ async function carregarOportunidades() {
         chartOportunidades.data.labels = ranking.map((c, i) => `${String(i + 1).padStart(2, '0')}  ${shortName(c.n)}`);
         chartOportunidades.data.datasets[0].data = ranking.map(c => c.v);
         chartOportunidades.update();
+
+        // ---------- Cartões de equipe ----------
+        const rankingEquipes = Object.entries(countByEquipe)
+            .map(([n, v]) => ({ n, v }))
+            .sort((a, b) => b.v - a.v)
+            .slice(0, 3);
+
+        const posLabels = ['Líder', '2º Lugar', '3º Lugar'];
+        const equipesEl = document.getElementById('opp-equipes');
+        equipesEl.innerHTML = '';
+        rankingEquipes.forEach((eq, i) => {
+            equipesEl.innerHTML += `
+                <div class="opp-team-card rank-${i + 1}">
+                    <div class="opp-team-pos">${posLabels[i]}</div>
+                    <div class="opp-team-name">${eq.n}</div>
+                    <div class="opp-team-count">${eq.v}</div>
+                    <div class="opp-team-label">oportunidades</div>
+                </div>`;
+        });
 
     } catch (error) {
         console.error('Erro ao carregar oportunidades:', error);
