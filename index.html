@@ -1105,7 +1105,7 @@
 
         <div class="panel">
             <div class="panel-head">
-                <div class="panel-title">Vendas em Abril</div>
+                <div class="panel-title" id="title-vendas-mes">Vendas em Abril</div>
                 <div class="panel-meta">VGV · Atualização Contínua</div>
             </div>
             <div class="panel-chart" style="flex:1"><canvas id="chartRankingMesAtual"></canvas></div>
@@ -1263,6 +1263,7 @@ function aplicarTitulosPeriodo() {
     // Slide 4 — Mês atual e anterior
     document.getElementById('title-mes-atual').innerText = NOMES_MES[MES_ATUAL-1];
     document.getElementById('title-mes-anterior').innerText = `Top 5 de ${NOMES_MES[MES_ANTERIOR-1]}`;
+    document.getElementById('title-vendas-mes').innerText = `Vendas em ${NOMES_MES[MES_ATUAL-1]}`;
 
     // Aba do navegador e loading
     document.title = `Placar · Jarvis · ${ANO_ATUAL}`;
