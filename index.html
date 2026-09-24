@@ -1563,11 +1563,11 @@ async function carregarDados() {
             const mes = parseInt(dataParts[1]);
             const ano = parseInt(dataParts[2]);
 
-            // Lauro Braga (diretor): vendas contam nos totais, mas ele não aparece
+            // Lauro Braga e Rafael Amorim (diretores): vendas contam nos totais, mas não aparecem
             // em rankings, pódios, equipes ou ticker (last sales).
             // Ocultos dos rankings: VGV conta nos totais/KPIs, nome não aparece.
             // Para adicionar futuramente, basta incluir na lista.
-            const OCULTOS_DOS_RANKINGS = ["Lauro Braga", "Cátia Caires"];
+            const OCULTOS_DOS_RANKINGS = ["Lauro Braga", "Cátia Caires", "Rafael Amorim"];
             if (OCULTOS_DOS_RANKINGS.includes(corretor)) {
                 if (ano === ANO_ATUAL && mes >= MES_INICIO_TRIM && mes <= MES_FIM_TRIM) {
                     vendasMesAMes[mes] += vgv;
@@ -1816,7 +1816,7 @@ async function carregarOportunidades() {
         const rows = csvParaArray(text, ",");
         // Colunas: [0]ID | [1]ID Pessoa | [2]ID Resp | [3]Responsavel | [4]Data | [5]Origem | [6]Status | [7]Etapa | [8]Equipe
 
-        const EXCLUIDOS_OPP = ["Lauro Braga", "Cátia Caires"];
+        const EXCLUIDOS_OPP = ["Lauro Braga", "Cátia Caires", "Rafael Amorim"];
 
         // Etapas que qualificam como Visita e Proposta
         const ETAPAS_VISITA   = ["Visita","Proposta","Venda","Reunião","Analise de Documentação","Aprovado","Reprovado","Financiamento"];
