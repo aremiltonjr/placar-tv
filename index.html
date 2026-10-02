@@ -1236,7 +1236,16 @@ const SLIDE_DURATION = 30000;
 // ==================== PERÍODO ATUAL (dinâmico) ====================
 // Calcula ano, mês e trimestre a partir da data do computador.
 // Toda a filtragem e títulos usam estas variáveis — não precisa mexer no código ao virar mês/trimestre/ano.
-const HOJE = new Date();
+// ⏸️ CONGELAMENTO TEMPORÁRIO: mantém o placar de SETEMBRO/2026 até 04/10/2026 (inclusive).
+// A partir de 05/10/2026 00:00 volta sozinho a usar a data real (pode remover este bloco depois).
+const CONGELAR_ATE   = new Date(2026, 9, 5);          // 05/10/2026 00:00 (mês 9 = outubro no JS)
+const DATA_CONGELADA = new Date(2026, 8, 30, 12, 0);  // 30/09/2026 (mês 8 = setembro no JS)
+function dataReferencia() {
+    const agora = new Date();
+    return agora < CONGELAR_ATE ? DATA_CONGELADA : agora;
+}
+
+const HOJE = dataReferencia();
 const ANO_ATUAL = HOJE.getFullYear();
 const MES_ATUAL = HOJE.getMonth() + 1; // 1-12
 const MES_ANTERIOR = MES_ATUAL === 1 ? 12 : MES_ATUAL - 1;
@@ -1972,7 +1981,7 @@ setInterval(carregarOportunidades, 120000);
 
 // Detecta virada de dia: se mudou o mês/trimestre/ano, recarrega a página pra recalcular tudo
 setInterval(() => {
-    const agora = new Date();
+    const agora = dataReferencia(); // respeita o congelamento temporário
     if (agora.getFullYear() !== ANO_ATUAL || (agora.getMonth() + 1) !== MES_ATUAL) {
         console.log('Virada de período detectada — recarregando...');
         location.reload();
