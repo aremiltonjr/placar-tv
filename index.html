@@ -1236,9 +1236,9 @@ const SLIDE_DURATION = 30000;
 // ==================== PERÍODO ATUAL (dinâmico) ====================
 // Calcula ano, mês e trimestre a partir da data do computador.
 // Toda a filtragem e títulos usam estas variáveis — não precisa mexer no código ao virar mês/trimestre/ano.
-// ⏸️ CONGELAMENTO TEMPORÁRIO: mantém o placar de SETEMBRO/2026 até 04/10/2026 (inclusive).
-// A partir de 05/10/2026 00:00 volta sozinho a usar a data real (pode remover este bloco depois).
-const CONGELAR_ATE   = new Date(2026, 9, 5);          // 05/10/2026 00:00 (mês 9 = outubro no JS)
+// ⏸️ CONGELAMENTO TEMPORÁRIO: mantém o placar de SETEMBRO/2026 até 05/10/2026 (inclusive).
+// A partir de 06/10/2026 00:00 volta sozinho a usar a data real (pode remover este bloco depois).
+const CONGELAR_ATE   = new Date(2026, 9, 6);          // 06/10/2026 00:00 (mês 9 = outubro no JS)
 const DATA_CONGELADA = new Date(2026, 8, 30, 12, 0);  // 30/09/2026 (mês 8 = setembro no JS)
 function dataReferencia() {
     const agora = new Date();
